@@ -10,7 +10,7 @@ public:
         declare_parameter("max_speed", 0.8);
 
         // Initialisation pigpio
-        pi_ = pigpio_start(nullptr, nullptr);
+        auto pi_ = pigpio_start(nullptr, nullptr);
         if (pi_< 0) {
             RCLCPP_FATAL(this->get_logger(), "Échec de la connexion à pigpiod !");
             rclcpp::shutdown();
@@ -75,7 +75,6 @@ private:
 
 
     // Variables membres
-    int pi_;
     bool emergency_stop_ = false;
     rclcpp::TimerBase::SharedPtr control_timer_;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
