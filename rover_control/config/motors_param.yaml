@@ -1,0 +1,3 @@
+motor_controller:
+  ros__parameters:
+    max_speed: 0.8
