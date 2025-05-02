@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_control)
 
+# Trouver la bibliothèque système serial (libserial)
+find_library(SERIAL_LIB libserial)
+
 # Dépendances ROS2
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -9,8 +12,6 @@ find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(serial REQUIRED)
-
-
 
 # Executable : pwm_decoder
 add_executable(pwm_decoder src/pwm_decoder.cpp)
@@ -23,7 +24,7 @@ ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 
 # Executable : motor_controller
 add_executable(motor_controller src/motor_controller.cpp)
-target_link_libraries(motor_controller ${rclcpp_LIBRARIES} ${geometry_msgs_LIBRARIES} ${serial_LIBRARIES})
+target_link_libraries(motor_controller ${SERIAL_LIB})
 
 # Installation des exécutables
 install(TARGETS
