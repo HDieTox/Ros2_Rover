@@ -1,28 +1,41 @@
 cmake_minimum_required(VERSION 3.8)
-project(robot_driver)
+project(rover_control)
 
-# Dépendances
+# Dépendances ROS2
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
-# Trouver pigpio
-find_library(PIGPIO_LIB pigpiod_if2)
+# Recherche manuelle de pigpio
+find_path(PIGPIO_INCLUDE_DIR pigpiod_if2.h)
+find_library(PIGPIO_LIBRARY pigpiod_if2)
 
-# Node PPM Decoder
+if(NOT PIGPIO_INCLUDE_DIR)
+  message(FATAL_ERROR "pigpio include directory not found")
+endif()
+
+if(NOT PIGPIO_LIBRARY)
+  message(FATAL_ERROR "pigpio library not found")
+endif()
+
+include_directories(${PIGPIO_INCLUDE_DIR})
+
+# Executable : ppm_decoder
 add_executable(ppm_decoder src/ppm_decoder.cpp)
-target_link_libraries(ppm_decoder ${PIGPIO_LIB} ${rclcpp_LIBRARIES})
+ament_target_dependencies(ppm_decoder rclcpp std_msgs geometry_msgs)
+target_link_libraries(ppm_decoder ${PIGPIO_LIBRARY})
 
-# Node PPM Converter
+# Executable : ppm_converter
 add_executable(ppm_converter src/ppm_converter.cpp)
-target_link_libraries(ppm_converter ${rclcpp_LIBRARIES} ${std_msgs_LIBRARIES} ${geometry_msgs_LIBRARIES})
+ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 
-# Node Motor Controller
+# Executable : motor_controller
 add_executable(motor_controller src/motor_controller.cpp)
-target_link_libraries(motor_controller ${rclcpp_LIBRARIES} ${geometry_msgs_LIBRARIES})
+ament_target_dependencies(motor_controller rclcpp std_msgs geometry_msgs)
+target_link_libraries(motor_controller ${PIGPIO_LIBRARY})
 
-# Installation
+# Installation des exécutables
 install(TARGETS
   ppm_decoder
   ppm_converter
@@ -30,6 +43,10 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY config/ DESTINATION share/${PROJECT_NAME}/config)
+# Installation des fichiers de configuration (si tu as un dossier config)
+install(DIRECTORY config/
+  DESTINATION share/${PROJECT_NAME}/config
+  OPTIONAL
+)
 
 ament_package()

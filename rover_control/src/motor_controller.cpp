@@ -75,6 +75,7 @@ private:
 
 
     // Variables membres
+    int pi_;
     bool emergency_stop_ = false;
     rclcpp::TimerBase::SharedPtr control_timer_;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
