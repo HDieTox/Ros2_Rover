@@ -63,7 +63,7 @@ private:
         int left_pwm = 1500 + (left * 500); // 1000µs (arrière) à 2000µs (avant)
         int right_pwm = 1500 + (right * 500);
 
-        gpioServo(17, left_pwm);  // GPIO17 -> Moteur gauche
+        (17, left_pwm);  // GPIO17 -> Moteur gauche
         gpioServo(18, right_pwm); // GPIO18 -> Moteur droit
 
         RCLCPP_INFO(get_logger(), "Motors: L=%.2f, R=%.2f", left, right);
