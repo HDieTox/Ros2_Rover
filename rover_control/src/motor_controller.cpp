@@ -83,3 +83,12 @@ private:
     geometry_msgs::msg::Twist::SharedPtr last_manual_cmd_;
     rclcpp::Time last_manual_time_;
 };
+
+
+int main(int argc, char * argv[])
+{
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<MotorController>());
+    rclcpp::shutdown();
+    return 0;
+}

@@ -21,10 +21,10 @@ endif()
 
 include_directories(${PIGPIO_INCLUDE_DIR})
 
-# Executable : ppm_decoder
-add_executable(ppm_decoder src/ppm_decoder.cpp)
-ament_target_dependencies(ppm_decoder rclcpp std_msgs geometry_msgs)
-target_link_libraries(ppm_decoder ${PIGPIO_LIBRARY})
+# Executable : pwm_decoder
+add_executable(pwm_decoder src/pwm_decoder.cpp)
+ament_target_dependencies(pwm_decoder rclcpp std_msgs geometry_msgs)
+target_link_libraries(pwm_decoder ${PIGPIO_LIBRARY})
 
 # Executable : ppm_converter
 add_executable(ppm_converter src/ppm_converter.cpp)
@@ -37,7 +37,7 @@ target_link_libraries(motor_controller ${PIGPIO_LIBRARY})
 
 # Installation des exécutables
 install(TARGETS
-  ppm_decoder
+  pwm_decoder
   ppm_converter
   motor_controller
   DESTINATION lib/${PROJECT_NAME}

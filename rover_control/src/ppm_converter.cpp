@@ -55,3 +55,11 @@ private:
     rclcpp::Subscription<std_msgs::msg::Int16MultiArray>::SharedPtr ppm_sub_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
 };
+
+int main(int argc, char **argv) {
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<PPMConverter>();
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
+}
