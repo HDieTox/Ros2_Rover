@@ -11,7 +11,6 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(libserial REQUIRED)
 
 # Executable : pwm_decoder
 add_executable(pwm_decoder src/pwm_decoder.cpp)
