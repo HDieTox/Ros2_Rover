@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_control)
 
-link_directories(/usr/lib)
-
 # Dépendances ROS2
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -35,7 +33,7 @@ ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 # Executable : motor_controller
 add_executable(motor_controller src/motor_controller.cpp)
 ament_target_dependencies(motor_controller rclcpp std_msgs geometry_msgs)
-target_link_libraries(motor_controller pigpiod_if2)
+target_link_libraries(motor_controller ${PIGPIO_LIBRARY})
 
 # Installation des exécutables
 install(TARGETS
