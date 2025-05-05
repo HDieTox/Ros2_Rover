@@ -10,14 +10,14 @@ public:
         declare_parameter("max_speed", 0.8);
 
         // Initialisation du port série
+        
         try {
-            try {
-                serial_port.Open("/dev/ttyAMA0");
-                serial_port.SetBaudRate(LibSerial::BaudRate::BAUD_19200);
-                serial_port.SetCharacterSize(LibSerial::CharacterSize::CHAR_SIZE_8);
-                serial_port.SetParity(LibSerial::Parity::PARITY_NONE);
-                serial_port.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
-                serial_port.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
+            serial_port.Open("/dev/ttyAMA0");
+            serial_port.SetBaudRate(LibSerial::BaudRate::BAUD_19200);
+            serial_port.SetCharacterSize(LibSerial::CharacterSize::CHAR_SIZE_8);
+            serial_port.SetParity(LibSerial::Parity::PARITY_NONE);
+            serial_port.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
+            serial_port.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
         } catch (const serial::IOException& e) {
             RCLCPP_FATAL(this->get_logger(), "Impossible d'ouvrir le port série: %s", e.what());
             rclcpp::shutdown();
@@ -55,6 +55,7 @@ public:
             RCLCPP_INFO(this->get_logger(), "Port série fermé");
         }
     }
+
 
 private:
     void updateMotors() {
