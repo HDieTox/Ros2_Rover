@@ -14,12 +14,8 @@ public:
 
         // Subscriber configurable
         ppm_sub_ = create_subscription<std_msgs::msg::Int16MultiArray>(
-            "/ppm_manual_raw", 10,
+            "/pwm_manual_raw", 10,
             [this](const std_msgs::msg::Int16MultiArray::SharedPtr msg) {
-                if (msg->data.size() < 2) {
-                    RCLCPP_WARN(get_logger(), "PPM message has insufficient channels");
-                    return;
-                }
                 processPPM(msg);
             });
         
