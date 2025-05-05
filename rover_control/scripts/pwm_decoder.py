@@ -32,11 +32,9 @@ class PWMDecoder(Node):
         self.get_logger().info("PWMDecoder node started with gpiozero")
 
     def on_rising(self, channel):
-        self.get_logger().info(f"Rising edge detected on channel {channel}")
         self.last_rise[channel] = time()
 
     def on_falling(self, channel):
-        self.get_logger().info(f"Falling edge detected on channel {channel}")
         if self.last_rise[channel] != 0:
             pulse_width = (time() - self.last_rise[channel]) * 1_000_000  # microsecondes
             # Clamp à la plage int16 pour éviter les erreurs de conversion

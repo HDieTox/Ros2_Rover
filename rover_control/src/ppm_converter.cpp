@@ -44,6 +44,8 @@ private:
             deadzone);
 
         cmd_vel_pub_->publish(cmd_vel);
+        RCLCPP_INFO(get_logger(), "PPM Linear: %f, Angular: %f", 
+            cmd_vel.linear.x, cmd_vel.angular.z);
     }
 
     double normalize(int value, int min, int max, int deadzone) {
