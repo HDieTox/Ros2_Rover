@@ -12,18 +12,18 @@ public:
         declare_parameter("ppm_min", 1000);
         declare_parameter("ppm_max", 2000);
 
-        std::string ppm_topic = get_parameter("ppm_manual_raw").as_string();
-        std::string cmd_vel_topic = get_parameter("cmd_vel_manual").as_string();
+        std::string ppm_topic = get_parameter("/ppm_manual_raw").as_string();
+        std::string cmd_vel_topic = get_parameter("/cmd_vel_manual").as_string();
 
         // Subscriber configurable
         ppm_sub_ = create_subscription<std_msgs::msg::Int16MultiArray>(
-            get_parameter("/ppm_manual_raw").as_string(), 10,
+            get_parameter(ppm_topic).as_string(), 10,
             [this](const std_msgs::msg::Int16MultiArray::SharedPtr msg) {
                 processPPM(msg);
             });
         
         cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>(
-            get_parameter("/cmd_vel_manual").as_string(), 10);
+            get_parameter(cmd_vel_topic).as_string(), 10);
     }
 
 private:
