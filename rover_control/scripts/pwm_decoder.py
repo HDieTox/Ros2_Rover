@@ -25,7 +25,7 @@ class PWMDecoder(Node):
         self.buttons[1].when_released = lambda: self.on_falling(1)
 
         # Publisher ROS2
-        self.publisher_ = self.create_publisher(Int16MultiArray, '/pwm_manual_raw', 10)
+        self.publisher_ = self.create_publisher(Int16MultiArray, "/pwm_manual_raw", 10)
         timer_period = 0.02  # 20 ms
         self.timer = self.create_timer(timer_period, self.publish_pwm)
 
