@@ -10,7 +10,7 @@ class PWMDecoder(Node):
         super().__init__('pwm_decoder')
 
         # Configuration des broches
-        self.pwm_pins = [17, 18]
+        self.pwm_pins = [11, 12]
         self.pwm_values = [0, 0]
         self.last_rise = [0, 0]
 
@@ -45,6 +45,7 @@ class PWMDecoder(Node):
         msg = Int16MultiArray()
         msg.data = [int(self.pwm_values[0]), int(self.pwm_values[1])]
         self.publisher_.publish(msg)
+        self.get_logger().info(f"Published PWM values: {msg.data}")
 
 def main(args=None):
     rclpy.init(args=args)
