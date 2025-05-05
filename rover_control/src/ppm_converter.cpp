@@ -21,6 +21,8 @@ public:
         
         cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>(
             "/cmd_vel_manual", 10);
+
+        RCLCPP_INFO(get_logger(), "PPM Converter Node Initialized");
     }
 
 private:
