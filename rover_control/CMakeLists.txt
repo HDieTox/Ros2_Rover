@@ -25,7 +25,7 @@ find_package(geometry_msgs REQUIRED)
 # Executable : pwm_decoder
 add_executable(pwm_decoder src/pwm_decoder.cpp)
 ament_target_dependencies(pwm_decoder rclcpp std_msgs geometry_msgs)
-target_link_libraries(pwm_decoder ${PIGPIO_LIBRARY})
+target_link_libraries(pwm_decoder pigpiod_if2)
 
 # Executable : ppm_converter
 add_executable(ppm_converter src/ppm_converter.cpp)
