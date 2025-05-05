@@ -18,11 +18,11 @@ public:
             serial_port.SetParity(LibSerial::Parity::PARITY_NONE);
             serial_port.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
             serial_port.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
-        } catch (const serial::IOException& e) {
+        } catch (const LibSerial::OpenFailed& e) {
             RCLCPP_FATAL(this->get_logger(), "Impossible d'ouvrir le port série: %s", e.what());
             rclcpp::shutdown();
         }
-        if (serial_port.isOpen()) {
+        if (serial_port.IsOpen()) {
             RCLCPP_INFO(this->get_logger(), "Port série ouvert");
         } else {
             RCLCPP_FATAL(this->get_logger(), "Impossible d'ouvrir le port série");
@@ -50,8 +50,8 @@ public:
     }
 
     ~MotorController() {
-        if (serial_.isOpen()) {
-            serial_.close();
+        if (serial_port.IsOpen()) {
+            serial_port.Close();
             RCLCPP_INFO(this->get_logger(), "Port série fermé");
         }
     }
@@ -108,7 +108,7 @@ private:
     void sendTrexCommand(uint8_t command, uint8_t value) {
         // Envoi de la commande au TReX Jr via le port série
         uint8_t data[2] = {command, value};
-        serial_port.write(data, 2);
+        serial_port.Write(data, 2);
     }
 
     // Variables membres
