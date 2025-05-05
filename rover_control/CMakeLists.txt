@@ -28,15 +28,9 @@ find_package(geometry_msgs REQUIRED)
 add_executable(ppm_converter src/ppm_converter.cpp)
 ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 
-# Executable : motor_controller
-add_executable(motor_controller src/motor_controller.cpp)
-ament_target_dependencies(motor_controller rclcpp std_msgs geometry_msgs)
-target_link_libraries(motor_controller ${SERIAL_LIB})
-
 # Installation des exécutables C++
 install(TARGETS
   ppm_converter
-  motor_controller
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -46,13 +40,8 @@ ament_python_install_package(${PROJECT_NAME})
 # Installation des fichiers Python
 install(PROGRAMS
   scripts/pwm_decoder.py
+  scripts/motor_controller.py
   DESTINATION lib/${PROJECT_NAME}
-)
-
-# Installation des fichiers de configuration 
-install(DIRECTORY config/
-  DESTINATION share/${PROJECT_NAME}/config
-  OPTIONAL
 )
 
 ament_package()

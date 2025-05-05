@@ -1,7 +1,0 @@
-ppm_converter:
-  ros__parameters:
-    channel_linear: 1
-    channel_angular: 2
-    deadzone: 50
-    ppm_min: 1000
-    ppm_max: 2000
