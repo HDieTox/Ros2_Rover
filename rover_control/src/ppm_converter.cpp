@@ -12,6 +12,9 @@ public:
         declare_parameter("ppm_min", 1000);
         declare_parameter("ppm_max", 2000);
 
+        std::string ppm_topic = get_parameter("ppm_manual_raw").as_string();
+        std::string cmd_vel_topic = get_parameter("cmd_vel_manual").as_string();
+
         // Subscriber configurable
         ppm_sub_ = create_subscription<std_msgs::msg::Int16MultiArray>(
             get_parameter("/ppm_manual_raw").as_string(), 10,
