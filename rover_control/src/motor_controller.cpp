@@ -1,6 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
-#include <serial.h>
+#include <libserial/serial.h>
 #include <stdexcept>
 
 class MotorController : public rclcpp::Node {
