@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'scripts'
+package_name = 'rover_control'
 
 setup(
     name=package_name,
@@ -13,7 +13,7 @@ setup(
     description='ROS2 driver for robot motor control and PWM decoding',
     entry_points={
         'console_scripts': [
-            'pwn_decoder = scripts.pwn_decoder:main',
+            'pwn_decoder = rover_control.pwn_decoder:main',
         ],
     },
 )
