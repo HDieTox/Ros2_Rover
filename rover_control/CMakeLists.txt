@@ -21,11 +21,14 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(PIGPIO REQUIRED libgpiod)
 
 # Executable : pwm_decoder
 add_executable(pwm_decoder src/pwm_decoder.cpp)
 ament_target_dependencies(pwm_decoder rclcpp std_msgs geometry_msgs)
-target_link_libraries(pwm_decoder pigpiod_if2)
+target_link_libraries(pwm_decoder libgpiod)
 
 # Executable : ppm_converter
 add_executable(ppm_converter src/ppm_converter.cpp)
