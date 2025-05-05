@@ -6,8 +6,8 @@ class PPMConverter : public rclcpp::Node {
 public:
     PPMConverter() : Node("ppm_converter") {
         // Paramètres configurables
-        declare_parameter("channel_linear", 1);
-        declare_parameter("channel_angular", 2);
+        declare_parameter("channel_linear", 0);
+        declare_parameter("channel_angular", 1);
         declare_parameter("deadzone", 50);
         declare_parameter("ppm_min", 1000);
         declare_parameter("ppm_max", 2000);
@@ -27,6 +27,8 @@ public:
 
 private:
     void processPPM(const std_msgs::msg::Int16MultiArray::SharedPtr msg) {
+        RCLCPP_INFO(get_logger(), "Received PPM message with %zu channels", msg->data.size());
+        
         auto cmd_vel = geometry_msgs::msg::Twist();
         
         int ch_lin = get_parameter("channel_linear").as_int();
