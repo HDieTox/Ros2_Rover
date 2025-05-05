@@ -34,7 +34,6 @@ target_link_libraries(motor_controller ${SERIAL_LIB})
 
 # Installation des exécutables C++
 install(TARGETS
-  pwm_decoder
   ppm_converter
   motor_controller
   DESTINATION lib/${PROJECT_NAME}
