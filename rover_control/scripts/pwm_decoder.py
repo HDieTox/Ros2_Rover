@@ -3,7 +3,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Int16MultiArray
 from gpiozero import Button
-from time import time
+from time import perf_counter
 
 class PWMDecoder(Node):
     def __init__(self):
@@ -32,14 +32,18 @@ class PWMDecoder(Node):
         self.get_logger().info("PWMDecoder node started with gpiozero")
 
     def on_rising(self, channel):
-        self.last_rise[channel] = time()
+        self.last_rise[channel] = perf_counter()
+
 
     def on_falling(self, channel):
         if self.last_rise[channel] != 0:
-            pulse_width = (time() - self.last_rise[channel]) * 1_000_000  # microsecondes
-            # Clamp à la plage int16 pour éviter les erreurs de conversion
-            pulse_width = max(-32768, min(32767, int(pulse_width)))
-            self.pwm_values[channel] = pulse_width
+            pulse_width = (perf_counter() - self.last_rise[channel]) * 1_000_000  # microseconds
+            
+            # Ignore pulses trop courtes ou trop longues (par exemple < 500us ou > 2500us)
+            if 500 <= pulse_width <= 2500:
+                pulse_width = max(-32768, min(32767, int(pulse_width)))
+                self.pwm_values[channel] = pulse_width
+
 
     def publish_pwm(self):
         msg = Int16MultiArray()
