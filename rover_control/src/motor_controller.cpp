@@ -108,7 +108,7 @@ private:
     void sendTrexCommand(uint8_t command, uint8_t value) {
         // Envoi de la commande au TReX Jr via le port série
         uint8_t data[2] = {command, value};
-        serial_port.Write(reinterpret_cast<const char*>(data), 2);
+        serial_port.Write(reinterpret_cast<const char*>(data));
     }
 
     // Variables membres
