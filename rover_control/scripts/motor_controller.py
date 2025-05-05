@@ -37,14 +37,18 @@ class motor_controller(Node):
         right = max(-1.0, min(1.0, right))
 
         # Convertir de [-1,1] à [0,1] duty cycle
-        left_duty = (left + 1) / 2
-        right_duty = (right + 1) / 2
+        left_duty = map_to_pwm_duty(left)
+        right_duty = map_to_pwm_duty(right)
 
         # Appliquer le duty cycle PWM software
         self.left_pwm.value = left_duty
         self.right_pwm.value = right_duty
 
         self.get_logger().info(f"PWM OUT (soft): left duty={left_duty:.2f}, right duty={right_duty:.2f}")
+
+def map_to_pwm_duty(x, in_min=-1, in_max=1, out_min=0.05, out_max=0.10):
+    # Mappe x de la plage [in_min, in_max] vers [out_min, out_max]
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 def main(args=None):
     rclpy.init(args=args)
