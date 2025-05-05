@@ -1,6 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
-#include <libserial/serial.h>
+#include <libserial/SerialPort.h>
 #include <stdexcept>
 
 class MotorController : public rclcpp::Node {
@@ -11,20 +11,18 @@ public:
 
         // Initialisation du port série
         try {
-            serial_.setPort("/dev/ttyAMA0"); // Port série du Raspberry Pi (UART)
-            serial_.setBaudrate(19200);       // Vitesse de communication (par défaut pour TReX Jr)
-            serial_.setParity(serial::parity_none);
-            serial_.setStopbits(serial::stopbits_one);
-            serial_.setBytesize(serial::eightbits);
-            serial::Timeout to = serial::Timeout::simpleTimeout(100);
-            serial_.setTimeout(to);
-            serial_.open();
+            try {
+                serial_port.Open("/dev/ttyAMA0");
+                serial_port.SetBaudRate(LibSerial::BaudRate::BAUD_19200);
+                serial_port.SetCharacterSize(LibSerial::CharacterSize::CHAR_SIZE_8);
+                serial_port.SetParity(LibSerial::Parity::PARITY_NONE);
+                serial_port.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
+                serial_port.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
         } catch (const serial::IOException& e) {
             RCLCPP_FATAL(this->get_logger(), "Impossible d'ouvrir le port série: %s", e.what());
             rclcpp::shutdown();
         }
-
-        if (serial_.isOpen()) {
+        if (serial_port.isOpen()) {
             RCLCPP_INFO(this->get_logger(), "Port série ouvert");
         } else {
             RCLCPP_FATAL(this->get_logger(), "Impossible d'ouvrir le port série");
@@ -82,12 +80,13 @@ private:
     }
 
     geometry_msgs::msg::Twist::SharedPtr selectControlSource() {
-        // Prioriser les commandes manuelles si elles sont récentes
-        if (last_manual_cmd_ && (now() - last_manual_time_).seconds() < 1.0) {
-            return last_manual_cmd_;
-        }
-        return last_cmd_vel_;
+        // Enovoie uniquement la commande manuelle 
+
+        // AJOUTER LES COMMANDE AUTONOMES
+
+        return last_manual_cmd_;
     }
+
 
     void setMotorSpeed(double left, double right) {
         // Convertir les vitesses [-1.0, 1.0] en commandes pour le TReX Jr (0-127 avant, 128-255 arrière)
@@ -108,11 +107,11 @@ private:
     void sendTrexCommand(uint8_t command, uint8_t value) {
         // Envoi de la commande au TReX Jr via le port série
         uint8_t data[2] = {command, value};
-        serial_.write(data, 2);
+        serial_port.write(data, 2);
     }
 
     // Variables membres
-    serial::Serial serial_;
+    LibSerial::SerialPort serial_port;
     rclcpp::TimerBase::SharedPtr control_timer_;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr manual_cmd_sub_;
