@@ -16,6 +16,10 @@ public:
         ppm_sub_ = create_subscription<std_msgs::msg::Int16MultiArray>(
             "/ppm_manual_raw", 10,
             [this](const std_msgs::msg::Int16MultiArray::SharedPtr msg) {
+                if (msg->data.size() < 2) {
+                    RCLCPP_WARN(get_logger(), "PPM message has insufficient channels");
+                    return;
+                }
                 processPPM(msg);
             });
         
@@ -28,7 +32,7 @@ public:
 private:
     void processPPM(const std_msgs::msg::Int16MultiArray::SharedPtr msg) {
         RCLCPP_INFO(get_logger(), "Received PPM message with %zu channels", msg->data.size());
-        
+
         auto cmd_vel = geometry_msgs::msg::Twist();
         
         int ch_lin = get_parameter("channel_linear").as_int();
