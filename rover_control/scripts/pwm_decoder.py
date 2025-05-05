@@ -14,6 +14,8 @@ class PWMDecoder(Node):
         self.pwm_values = [0, 0]
         self.last_rise = [0, 0]
 
+        self.pwm_history = [[], []]  # pour stocker les dernières mesures
+
         # Instanciation des entrées GPIO
         self.buttons = [Button(self.pwm_pins[0], pull_up=False, bounce_time=None),
                         Button(self.pwm_pins[1], pull_up=False, bounce_time=None)]
@@ -37,12 +39,12 @@ class PWMDecoder(Node):
 
     def on_falling(self, channel):
         if self.last_rise[channel] != 0:
-            pulse_width = (perf_counter() - self.last_rise[channel]) * 1_000_000  # microseconds
-            
-            # Ignore pulses trop courtes ou trop longues (par exemple < 500us ou > 2500us)
+            pulse_width = (perf_counter() - self.last_rise[channel]) * 1_000_000
             if 500 <= pulse_width <= 2500:
-                pulse_width = max(-32768, min(32767, int(pulse_width)))
-                self.pwm_values[channel] = pulse_width
+                self.pwm_history[channel].append(pulse_width)
+                if len(self.pwm_history[channel]) > 5:  # moyenne sur 5 mesures
+                    self.pwm_history[channel].pop(0)
+                self.pwm_values[channel] = int(sum(self.pwm_history[channel]) / len(self.pwm_history[channel]))
 
 
     def publish_pwm(self):
