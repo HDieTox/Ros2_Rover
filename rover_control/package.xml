@@ -4,7 +4,7 @@
   <version>0.1.0</version>
   <description>ROS2 driver for robot motor control and PWM decoding</description>
 
-  <maintainer email="tom.compagnon2003@gmail.Com">Tom</maintainer>
+  <maintainer email="tom.compagnon@ensea.fr">Tom</maintainer>
   <license>Apache 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
@@ -13,6 +13,7 @@
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
   <depend>serial</depend>
+  <depend>python3-gpiozero</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

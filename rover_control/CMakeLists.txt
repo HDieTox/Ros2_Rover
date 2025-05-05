@@ -21,25 +21,18 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(PIGPIO REQUIRED libgpiod)
-
-# Executable : pwm_decoder
-add_executable(pwm_decoder src/pwm_decoder.cpp)
-ament_target_dependencies(pwm_decoder rclcpp std_msgs geometry_msgs)
-target_link_libraries(pwm_decoder libgpiod)
 
 # Executable : ppm_converter
 add_executable(ppm_converter src/ppm_converter.cpp)
 ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 
 # Executable : motor_controller
-add_executable(motor_controller src/motor_controller.cpp)
+add_executable(motor_controller src/motor_controller.py)
 ament_target_dependencies(motor_controller rclcpp std_msgs geometry_msgs)
 target_link_libraries(motor_controller ${SERIAL_LIB})
 
-# Installation des exécutables
+# Installation des exécutables C++
 install(TARGETS
   pwm_decoder
   ppm_converter
@@ -47,7 +40,13 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Installation des fichiers de configuration (si tu as un dossier config)
+# Installation des fichiers Python
+install(PROGRAMS
+  src/scripts/pwm_decoder.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Installation des fichiers de configuration 
 install(DIRECTORY config/
   DESTINATION share/${PROJECT_NAME}/config
   OPTIONAL
