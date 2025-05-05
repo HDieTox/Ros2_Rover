@@ -28,7 +28,7 @@ add_executable(ppm_converter src/ppm_converter.cpp)
 ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 
 # Executable : motor_controller
-add_executable(motor_controller src/motor_controller.py)
+add_executable(motor_controller src/motor_controller.cpp)
 ament_target_dependencies(motor_controller rclcpp std_msgs geometry_msgs)
 target_link_libraries(motor_controller ${SERIAL_LIB})
 
