@@ -2,25 +2,20 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-from gpiozero import Servo
+from gpiozero import PWMOutputDevice
 from time import sleep
 
 class motor_controller(Node):
     def __init__(self):
         super().__init__('motor_controller')
 
-        # Paramètres PWM pour les entrées RC du TReX Jr (en secondes)
-        # Généralement, 1ms = marche arrière maxi, 1.5ms = stop, 2ms = avant maxi
-        self.servo_min_pulse = 1/1000      # 1 ms
-        self.servo_max_pulse = 2/1000      # 2 ms
-
-        # Broches GPIO pour les signaux RC (adapter selon ton câblage)
+        # Broches GPIO pour PWM software (adapter selon ton câblage)
         self.left_pwm_pin = 22
         self.right_pwm_pin = 23
 
-        # Création des objets Servo gpiozero
-        self.left_servo = Servo(self.left_pwm_pin, min_pulse_width=self.servo_min_pulse, max_pulse_width=self.servo_max_pulse)
-        self.right_servo = Servo(self.right_pwm_pin, min_pulse_width=self.servo_min_pulse, max_pulse_width=self.servo_max_pulse)
+        # Création des objets PWMOutputDevice (PWM software)
+        self.left_pwm = PWMOutputDevice(self.left_pwm_pin, frequency=50)  # 50 Hz standard servo freq
+        self.right_pwm = PWMOutputDevice(self.right_pwm_pin, frequency=50)
 
         # Souscription au topic /cmd_vel_manual
         self.subscription = self.create_subscription(
@@ -30,22 +25,26 @@ class motor_controller(Node):
             10
         )
 
-        self.get_logger().info("TReX Jr PWM controller node started")
+        self.get_logger().info("motor_controller node started")
 
     def cmd_vel_callback(self, msg):
         # Calcul des vitesses gauche/droite [-1, 1]
         left = msg.linear.x - msg.angular.z
         right = msg.linear.x + msg.angular.z
 
-        # Clamp les valeurs dans [-1, 1]
+        # Clamp dans [-1, 1]
         left = max(-1.0, min(1.0, left))
         right = max(-1.0, min(1.0, right))
 
-        # Appliquer les vitesses aux sorties PWM RC
-        self.left_servo.value = left
-        self.right_servo.value = right
+        # Convertir de [-1,1] à [0,1] duty cycle
+        left_duty = (left + 1) / 2
+        right_duty = (right + 1) / 2
 
-        self.get_logger().info(f"PWM OUT: left={left:.2f}, right={right:.2f}")
+        # Appliquer le duty cycle PWM software
+        self.left_pwm.value = left_duty
+        self.right_pwm.value = right_duty
+
+        self.get_logger().info(f"PWM OUT (soft): left duty={left_duty:.2f}, right duty={right_duty:.2f}")
 
 def main(args=None):
     rclpy.init(args=args)
@@ -55,9 +54,8 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        # Met les PWM à neutre à l'arrêt
-        node.left_servo.value = 0
-        node.right_servo.value = 0
+        node.left_pwm.off()
+        node.right_pwm.off()
         sleep(0.5)
         node.destroy_node()
         rclpy.shutdown()
