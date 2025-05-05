@@ -9,7 +9,7 @@
 class PWMDecoder : public rclcpp::Node {
 public:
     PWMDecoder() : Node("pwm_decoder"), running_(true) {
-        chip_ = gpiod_chip_open("/dev/gpiochip0");
+        chip_ = gpiod_chip_open_by_name("gpiochip0");
         if (!chip_) {
             RCLCPP_FATAL(this->get_logger(), "Failed to open gpiochip0");
             rclcpp::shutdown();
@@ -37,23 +37,16 @@ public:
     }
 
 private:
-    bool setup_gpio_line(unsigned int pin, gpiod_line **line) {
+    bool setup_gpio_line(unsigned int pin, struct gpiod_line **line) {
         *line = gpiod_chip_get_line(chip_, pin);
         if (!*line) {
             RCLCPP_FATAL(this->get_logger(), "Failed to get line %u", pin);
             return false;
         }
 
-        // Configuration pour capter les événements sur les deux fronts
-        struct gpiod_line_request_config config;
-        config.consumer = "pwm_decoder";
-        config.request_type = GPIOD_LINE_REQUEST_EVENT_BOTH_EDGES; // événement sur front montant et descendant
-        config.flags = 0;
-
-        // Valeur initiale ignorée pour event request, on passe 0
-        int ret = gpiod_line_request(*line, &config, 0);
-        if (ret < 0) {
-            RCLCPP_FATAL(this->get_logger(), "Failed to request line %u", pin);
+        // Demande la ligne en mode événement sur les deux fronts
+        if (gpiod_line_request_both_edges_events(*line, "pwm_decoder") < 0) {
+            RCLCPP_FATAL(this->get_logger(), "Failed to request events for line %u", pin);
             return false;
         }
 
@@ -80,21 +73,26 @@ private:
         auto last_rise1 = std::chrono::steady_clock::time_point{};
         auto last_rise2 = std::chrono::steady_clock::time_point{};
 
+        struct timespec timeout = {0, 10000000}; // 10 ms
+
         while (rclcpp::ok() && running_) {
-            check_line_event(line1_, 1, event, last_rise1);
-            check_line_event(line2_, 2, event, last_rise2);
+            check_line_event(line1_, 1, event, last_rise1, timeout);
+            check_line_event(line2_, 2, event, last_rise2, timeout);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     }
 
-    void check_line_event(gpiod_line *line, int channel,
+    void check_line_event(struct gpiod_line *line, int channel,
                           struct gpiod_line_event &event,
-                          std::chrono::steady_clock::time_point &last_rise) {
-        int ret = gpiod_line_event_wait(line, &timeout_);
-        if (ret <= 0) return;
+                          std::chrono::steady_clock::time_point &last_rise,
+                          const struct timespec &timeout) {
+        int ret = gpiod_line_event_wait(line, &timeout);
+        if (ret <= 0)
+            return;
 
         ret = gpiod_line_event_read(line, &event);
-        if (ret < 0) return;
+        if (ret < 0)
+            return;
 
         if (event.event_type == GPIOD_LINE_EVENT_RISING_EDGE) {
             last_rise = std::chrono::steady_clock::now();
@@ -107,20 +105,18 @@ private:
 
     void publishPWM() {
         auto msg = std_msgs::msg::Int16MultiArray();
-        // Attention au warning de conversion : Int16MultiArray utilise int16_t signé
         msg.data = {static_cast<int16_t>(pwm_values_[0]), static_cast<int16_t>(pwm_values_[1])};
         pwm_pub_->publish(msg);
     }
 
-    // Configuration
+    // Configuration GPIO
     const unsigned int pwm_pin1_ = 17;
     const unsigned int pwm_pin2_ = 18;
-    struct timespec timeout_ = {0, 10000000}; // 10 ms
 
-    // GPIO
-    gpiod_chip *chip_ = nullptr;
-    gpiod_line *line1_ = nullptr;
-    gpiod_line *line2_ = nullptr;
+    // Libgpiod
+    struct gpiod_chip *chip_ = nullptr;
+    struct gpiod_line *line1_ = nullptr;
+    struct gpiod_line *line2_ = nullptr;
 
     // Contrôle
     std::atomic<bool> running_;
@@ -139,3 +135,4 @@ int main(int argc, char **argv) {
     rclcpp::shutdown();
     return 0;
 }
+
