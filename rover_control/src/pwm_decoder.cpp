@@ -1,6 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/int16_multi_array.hpp"
-#include <gpiod.h>
+#include <gpiod.hpp>
 #include <thread>
 #include <chrono>
 
