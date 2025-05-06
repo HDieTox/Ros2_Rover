@@ -9,6 +9,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+
+find_library(LIBSERIAL_LIB libserial PATH /usr/include)
+
 # Dépendances ROS2
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
@@ -18,11 +21,13 @@ find_package(rclpy REQUIRED)
 
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(LibSerial REQUIRED)
+find_package(libserial REQUIRED)
+
+
 
 add_executable(ppm_converter src/ppm_converter.cpp)
 ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
-target_link_libraries(ppm_converter LibSerial)
+target_link_libraries(ppm_converter LIBSERIAL_LIB)
 
 # Installation des exécutables C++
 install(TARGETS
