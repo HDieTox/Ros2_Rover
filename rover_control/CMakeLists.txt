@@ -27,7 +27,7 @@ endif()
 
 # C++ ============================================
 add_executable(ppm_converter src/ppm_converter.cpp)
-target_include_directories(ppm_converter PRIVATE /usr/local/include)
+target_include_directories(ppm_converter PRIVATE /home/tomco/serial/include)
 target_link_libraries(ppm_converter ${SERIAL_LIB})
 ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 
