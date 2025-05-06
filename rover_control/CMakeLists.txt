@@ -10,7 +10,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 
-find_library(LIBSERIAL_LIB libserial PATH /usr/include)
+find_library(LIBSERIAL_LIB libserial PATHS /usr/lib /usr/lib/arm-linux-gnueabihf)
 
 # Dépendances ROS2
 find_package(ament_cmake REQUIRED)
@@ -21,13 +21,13 @@ find_package(rclpy REQUIRED)
 
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(libserial REQUIRED)
 
 
 
 add_executable(ppm_converter src/ppm_converter.cpp)
+target_include_directories(ppm_converter PRIVATE /usr/include/libserial)
+target_link_libraries(ppm_converter ${LIBSERIAL_LIB})
 ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
-target_link_libraries(ppm_converter LIBSERIAL_LIB)
 
 # Installation des exécutables C++
 install(TARGETS
