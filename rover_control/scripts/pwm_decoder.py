@@ -42,7 +42,7 @@ class PWMDecoder(Node):
             pulse_width = (perf_counter() - self.last_rise[channel]) * 1_000_000
             if 500 <= pulse_width <= 2500:
                 self.pwm_history[channel].append(pulse_width)
-                if len(self.pwm_history[channel]) > 20:  # moyenne sur 5 mesures
+                if len(self.pwm_history[channel]) > 10:  # moyenne sur 5 mesures
                     self.pwm_history[channel].pop(0)
                 self.pwm_values[channel] = int(sum(self.pwm_history[channel]) / len(self.pwm_history[channel]))
 

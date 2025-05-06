@@ -21,7 +21,6 @@ find_package(rclpy REQUIRED)
 
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
 
 # C++ ============================================
 # Executable : ppm_converter
@@ -40,7 +39,6 @@ ament_python_install_package(${PROJECT_NAME})
 # Installation des fichiers Python
 install(PROGRAMS
   scripts/pwm_decoder.py
-  scripts/motor_controller.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

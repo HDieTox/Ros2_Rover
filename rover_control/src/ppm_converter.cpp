@@ -2,6 +2,8 @@
 #include "std_msgs/msg/int16_multi_array.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 
+#include <serial/serial.h>
+
 class PPMConverter : public rclcpp::Node {
 public:
     PPMConverter() : Node("ppm_converter") {
@@ -12,15 +14,29 @@ public:
         declare_parameter("ppm_min", 1000);
         declare_parameter("ppm_max", 2000);
 
+        std::string port = "/dev/serial0";
+        int baudrate = 115200;
+
+        try {
+            serial_port_.setPort(port);
+            serial_port_.setBaudrate(baudrate);
+            serial::Timeout timeout = serial::Timeout::simpleTimeout(1000);
+            serial_port_.setTimeout(timeout);
+            serial_port_.open();
+        } catch (const std::exception &e) {
+            RCLCPP_ERROR(get_logger(), "Erreur ouverture port série: %s", e.what());
+        }
+
+        if (!serial_port_.isOpen()) {
+            RCLCPP_ERROR(get_logger(), "Impossible d'ouvrir le port série %s", port.c_str());
+        }
+
         // Subscriber configurable
         ppm_sub_ = create_subscription<std_msgs::msg::Int16MultiArray>(
             "/pwm_manual_raw", 10,
             [this](const std_msgs::msg::Int16MultiArray::SharedPtr msg) {
                 processPPM(msg);
             });
-        
-        cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>(
-            "/cmd_vel_manual", 10);
 
         RCLCPP_INFO(get_logger(), "PPM Converter Node Initialized");
     }
@@ -45,7 +61,12 @@ private:
             get_parameter("ppm_max").as_int(),
             deadzone);
 
-        cmd_vel_pub_->publish(cmd_vel);
+        if (serial_port_.isOpen()) {
+            std::ostringstream oss;
+            oss << "L:" << std::fixed << std::setprecision(3) << cmd_vel.linear.x
+                << " A:" << std::fixed << std::setprecision(3) << cmd_vel.angular.z << "\n";
+            serial_port_.write(oss.str());
+        }
         RCLCPP_INFO(get_logger(), "PPM Linear: %f, Angular: %f", 
             cmd_vel.linear.x, cmd_vel.angular.z);
     }
@@ -53,13 +74,14 @@ private:
     double normalize(int value, int min, int max, int deadzone) {
         double middle = (min + max) / 2.0;
         double range = (max - min) / 2.0;
-        double val = (value - middle) / range; // [-1.0, +1.0] pour 1000-2000µs
+        double val = (value - middle) / range; // [-1.0, +1.0]
 
         return (fabs(val) < deadzone/100.0) ? 0.0 : val;
     }
 
+    serial::Serial serial_port_;
+
     rclcpp::Subscription<std_msgs::msg::Int16MultiArray>::SharedPtr ppm_sub_;
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
 };
 
 int main(int argc, char **argv) {
