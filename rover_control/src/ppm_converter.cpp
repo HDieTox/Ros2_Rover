@@ -72,9 +72,9 @@ private:
             oss << "L:" << std::fixed << std::setprecision(3) << cmd_vel.linear.x
                 << " A:" << std::fixed << std::setprecision(3) << cmd_vel.angular.z << "\n";
             serial_port_.Write(oss.str());
+            RCLCPP_INFO(get_logger(), "PPM Linear: %f, Angular: %f", 
+                cmd_vel.linear.x, cmd_vel.angular.z);
         }
-        // RCLCPP_INFO(get_logger(), "PPM Linear: %f, Angular: %f", 
-        //    cmd_vel.linear.x, cmd_vel.angular.z);
     }
 
     double normalize(int value, int min, int max, int deadzone) {
