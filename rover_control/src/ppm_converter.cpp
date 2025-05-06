@@ -19,7 +19,6 @@ public:
         declare_parameter("ppm_max", 2000);
 
         std::string port = "/dev/serial0";
-        int baudrate = 115200;
 
         try {
             serial_port_.Open(port);
@@ -74,7 +73,7 @@ private:
                 << " A:" << std::fixed << std::setprecision(3) << cmd_vel.angular.z << "\n";
             serial_port_.Write(oss.str());
         }
-        RCLCPP_INFO(get_logger(), "PPM Linear: %f, Angular: %f", 
+        // RCLCPP_INFO(get_logger(), "PPM Linear: %f, Angular: %f", 
             cmd_vel.linear.x, cmd_vel.angular.z);
     }
 
