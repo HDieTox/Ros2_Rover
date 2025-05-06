@@ -9,25 +9,26 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
 # Dépendances ROS2
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
-
 
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(serial REQUIRED)
 
-target_link_libraries(ppm_converter serial)
-target_include_directories(ppm_converter PRIVATE /usr/local/include)
+
+find_library(SERIAL_LIB serial PATHS /usr/local/lib)
+if(NOT SERIAL_LIB)
+  message(FATAL_ERROR "Library serial not found")
+endif()
 
 # C++ ============================================
-# Executable : ppm_converter
 add_executable(ppm_converter src/ppm_converter.cpp)
+target_include_directories(ppm_converter PRIVATE /usr/local/include)
+target_link_libraries(ppm_converter ${SERIAL_LIB})
 ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 
 # Installation des exécutables C++
@@ -39,7 +40,6 @@ install(TARGETS
 # Python ==========================================
 ament_python_install_package(${PROJECT_NAME})
 
-# Installation des fichiers Python
 install(PROGRAMS
   scripts/pwm_decoder.py
   DESTINATION lib/${PROJECT_NAME}
