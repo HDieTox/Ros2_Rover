@@ -9,18 +9,21 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Trouver la bibliothèque système serial (libserial)
-find_library( serial)
 
 # Dépendances ROS2
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+
 
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(serial REQUIRED)
+
+target_link_libraries(ppm_converter serial)
+target_include_directories(ppm_converter PRIVATE /usr/local/include)
 
 # C++ ============================================
 # Executable : ppm_converter
