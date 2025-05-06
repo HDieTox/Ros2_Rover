@@ -14,7 +14,7 @@
   <depend>rclpy</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>libserial</depend>
+  <depend>serial</depend>
   <depend>python3-gpiozero</depend>
 
   <export>
