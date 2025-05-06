@@ -10,7 +10,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 
-find_library(LIBSERIAL_LIB libserial PATHS /usr/lib /usr/lib/arm-linux-gnueabihf)
+find_library(LIBSERIAL_LIB libserial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
 
 # Dépendances ROS2
 find_package(ament_cmake REQUIRED)
