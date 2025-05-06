@@ -10,7 +10,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # Trouver la bibliothèque système serial (libserial)
-find_library(SERIAL_LIB serial)
+find_library( serial)
 
 # Dépendances ROS2
 find_package(ament_cmake REQUIRED)

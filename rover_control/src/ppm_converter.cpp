@@ -2,7 +2,7 @@
 #include "std_msgs/msg/int16_multi_array.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 
-#include <serial.h>
+#include <serial/serial.h>
 
 class PPMConverter : public rclcpp::Node {
 public:
