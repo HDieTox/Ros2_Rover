@@ -2,7 +2,7 @@
 #include "std_msgs/msg/int16_multi_array.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 
-#include <LibSerial/SerialPort.h>
+#include <libserial/SerialPort.h>
 #include <sstream>
 #include <iomanip>
 #include <cmath>
