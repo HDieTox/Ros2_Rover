@@ -2,12 +2,16 @@
 #include "std_msgs/msg/int16_multi_array.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 
-#include <serial/serial.h>
+#include <LibSerial/SerialPort.h>
+#include <sstream>
+#include <iomanip>
+#include <cmath>
+
+using namespace LibSerial;
 
 class PPMConverter : public rclcpp::Node {
 public:
     PPMConverter() : Node("ppm_converter") {
-        // Paramètres configurables
         declare_parameter("channel_linear", 0);
         declare_parameter("channel_angular", 1);
         declare_parameter("deadzone", 50);
@@ -18,54 +22,57 @@ public:
         int baudrate = 115200;
 
         try {
-            serial_port_.setPort(port);
-            serial_port_.setBaudrate(baudrate);
-            serial::Timeout timeout = serial::Timeout::simpleTimeout(1000);
-            serial_port_.setTimeout(timeout);
-            serial_port_.open();
-        } catch (const std::exception &e) {
-            RCLCPP_ERROR(get_logger(), "Erreur ouverture port série: %s", e.what());
-        }
-
-        if (!serial_port_.isOpen()) {
+            serial_port_.Open(port);
+            serial_port_.SetBaudRate(BaudRate::BAUD_115200);
+            serial_port_.SetCharacterSize(CharacterSize::CHAR_SIZE_8);
+            serial_port_.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
+            serial_port_.SetParity(Parity::PARITY_NONE);
+            serial_port_.SetStopBits(StopBits::STOP_BITS_1);
+            RCLCPP_INFO(get_logger(), "Port série %s ouvert.", port.c_str());
+        } catch (const OpenFailed&) {
             RCLCPP_ERROR(get_logger(), "Impossible d'ouvrir le port série %s", port.c_str());
         }
 
-        // Subscriber configurable
         ppm_sub_ = create_subscription<std_msgs::msg::Int16MultiArray>(
             "/pwm_manual_raw", 10,
             [this](const std_msgs::msg::Int16MultiArray::SharedPtr msg) {
                 processPPM(msg);
             });
+    }
 
-        RCLCPP_INFO(get_logger(), "PPM Converter Node Initialized");
+    ~PPMConverter() {
+        if (serial_port_.IsOpen()) {
+            serial_port_.Close();
+        }
     }
 
 private:
     void processPPM(const std_msgs::msg::Int16MultiArray::SharedPtr msg) {
-        RCLCPP_INFO(get_logger(), "Received PPM message with %zu channels", msg->data.size());
-
-        auto cmd_vel = geometry_msgs::msg::Twist();
-        
         int ch_lin = get_parameter("channel_linear").as_int();
         int ch_ang = get_parameter("channel_angular").as_int();
         int deadzone = get_parameter("deadzone").as_int();
+
+        if (ch_lin >= static_cast<int>(msg->data.size()) || ch_ang >= static_cast<int>(msg->data.size())) {
+            RCLCPP_WARN(get_logger(), "Channel index out of range");
+            return;
+        }
+
+        auto cmd_vel = geometry_msgs::msg::Twist();
 
         cmd_vel.linear.x = normalize(msg->data[ch_lin], 
             get_parameter("ppm_min").as_int(),
             get_parameter("ppm_max").as_int(),
             deadzone);
-            
         cmd_vel.angular.z = normalize(msg->data[ch_ang],
             get_parameter("ppm_min").as_int(),
             get_parameter("ppm_max").as_int(),
             deadzone);
 
-        if (serial_port_.isOpen()) {
+        if (serial_port_.IsOpen()) {
             std::ostringstream oss;
             oss << "L:" << std::fixed << std::setprecision(3) << cmd_vel.linear.x
                 << " A:" << std::fixed << std::setprecision(3) << cmd_vel.angular.z << "\n";
-            serial_port_.write(oss.str());
+            serial_port_.Write(oss.str());
         }
         RCLCPP_INFO(get_logger(), "PPM Linear: %f, Angular: %f", 
             cmd_vel.linear.x, cmd_vel.angular.z);
@@ -75,12 +82,10 @@ private:
         double middle = (min + max) / 2.0;
         double range = (max - min) / 2.0;
         double val = (value - middle) / range; // [-1.0, +1.0]
-
         return (fabs(val) < deadzone/100.0) ? 0.0 : val;
     }
 
-    serial::Serial serial_port_;
-
+    SerialPort serial_port_;
     rclcpp::Subscription<std_msgs::msg::Int16MultiArray>::SharedPtr ppm_sub_;
 };
 
