@@ -2,6 +2,7 @@
 #include "nmea_msgs/msg/sentence.hpp"
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
 #include <nmea.h>
+#include <nmea/gpgga.h> 
 
 class NMEAParser : public rclcpp::Node
 {
