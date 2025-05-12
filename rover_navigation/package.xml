@@ -13,6 +13,7 @@
   <depend>sensor_msgs</depend>
   <depend>nmea_msgs</depend>
   <depend>serial</depend>
+  <depend>libnmea</depend>
   <depend>geographic_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
