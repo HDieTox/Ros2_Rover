@@ -3,7 +3,7 @@
 <package format="3">
   <name>rover_navigation</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Everything for the Autonomous navigation</description>
   <maintainer email="tom.compagnon2003@gmail.com">tom</maintainer>
   <license>TODO: License declaration</license>
 
