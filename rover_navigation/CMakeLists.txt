@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_navigation)
 
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -15,9 +19,11 @@ find_package(geographic_msgs REQUIRED)
 
 add_executable(nmea_parser src/nmea_parser.cpp)
 target_link_libraries(nmea_parser ${rclcpp_LIBRARIES})
+ament_target_dependencies(ppm_converter rclcpp std_msgs sensor_msgs)
 
 add_executable(serial_nmea_publisher src/serial_nmea_publisher.cpp)
-target_link_libraries(serial_nmea_publisher ${rclcpp_LIBRARIES} ${LIBSERIAL_LIB})
+target_link_libraries(serial_nmea_publisher ${LIBSERIAL_LIB})
+ament_target_dependencies(ppm_converter rclcpp std_msgs)
 
 install(TARGETS
   nmea_parser
