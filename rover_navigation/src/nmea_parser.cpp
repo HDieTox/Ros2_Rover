@@ -48,15 +48,11 @@ private:
         // Libérer la mémoire allouée par nmea_parse
         nmea_free(data);
     }
-
-    // Libérer la mémoire allouée par nmea_parse
-    nmea_free(data);
 }
 
 rclcpp::Subscription<nmea_msgs::msg::Sentence>::SharedPtr subscription_;
 rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr publisher_;
-}
-;
+
 
 int main(int argc, char **argv)
 {
