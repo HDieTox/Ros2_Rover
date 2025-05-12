@@ -26,10 +26,12 @@ private:
         fix.header.stamp = get_clock()->now();
         fix.latitude = gpgga->latitude.degrees + (gpgga->latitude.minutes / 60.0);
         fix.longitude = gpgga->longitude.degrees + (gpgga->longitude.minutes / 60.0);
-        fix.altitude = gpgga->altitude.degrees + (gpgga->altitude.minutes / 60.0);
+        fix.altitude = gpgga->altitude;
         publisher_->publish(fix);
       }
     }
+
+    free_nmea(data);
   }
 
   rclcpp::Subscription<nmea_msgs::msg::Sentence>::SharedPtr subscription_;
