@@ -15,9 +15,12 @@ public:
 
 private:
   void nmea_callback(const nmea_msgs::msg::Sentence::SharedPtr msg) {
-    nmea_s data;
-    if(nmea_parse(&data, msg->sentence.c_str(), msg->sentence.size()) == NMEA_OK) {
-      if(data.type == NMEA_GPGGA) {
+    nmea_s data = nmea_parse(msg->sentence, strlen(msg->sentence), 0);
+
+    if(data != NULL) {
+      if(data->type == NMEA_GPGGA) {
+        nmea_gpgga_s gpgga = (nmea_gpgga_s*) data;
+
         auto fix = sensor_msgs::msg::NavSatFix();
         fix.header.stamp = get_clock()->now();
         fix.latitude = data.gpgga.latitude;
