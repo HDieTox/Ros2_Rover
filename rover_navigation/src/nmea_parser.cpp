@@ -24,9 +24,9 @@ private:
 
         auto fix = sensor_msgs::msg::NavSatFix();
         fix.header.stamp = get_clock()->now();
-        fix.latitude = gpgga->latitude;
-        fix.longitude = gpgga->longitude;
-        fix.altitude = gpgga->altitude;
+        fix.latitude = gpgga->latitude.degrees + (gpgga->latitude.minutes / 60.0);
+        fix.longitude = gpgga->longitude.degrees + (gpgga->longitude.minutes / 60.0);
+        fix.altitude = gpgga->altitude.degrees + (gpgga->altitude.minutes / 60.0);
         publisher_->publish(fix);
       }
     }
