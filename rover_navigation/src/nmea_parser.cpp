@@ -1,7 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "nmea_msgs/msg/sentence.hpp"
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
-#include "libnmea/nmea.h"
+#include <nmea.h>
 
 class NMEAParser : public rclcpp::Node
 {
