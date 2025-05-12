@@ -31,7 +31,7 @@ private:
       }
     }
 
-    free_nmea(data);
+    nmea_free(data);
   }
 
   rclcpp::Subscription<nmea_msgs::msg::Sentence>::SharedPtr subscription_;
