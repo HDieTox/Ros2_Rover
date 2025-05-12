@@ -19,11 +19,11 @@ find_package(geographic_msgs REQUIRED)
 
 add_executable(nmea_parser src/nmea_parser.cpp)
 target_link_libraries(nmea_parser ${rclcpp_LIBRARIES})
-ament_target_dependencies(ppm_converter rclcpp std_msgs sensor_msgs)
+ament_target_dependencies(nmea_parser rclcpp std_msgs sensor_msgs)
 
 add_executable(serial_nmea_publisher src/serial_nmea_publisher.cpp)
 target_link_libraries(serial_nmea_publisher ${LIBSERIAL_LIB})
-ament_target_dependencies(ppm_converter rclcpp std_msgs)
+ament_target_dependencies(serial_nmea_publisher rclcpp std_msgs)
 
 install(TARGETS
   nmea_parser
