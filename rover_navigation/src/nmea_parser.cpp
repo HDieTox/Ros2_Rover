@@ -15,17 +15,18 @@ public:
 
 private:
   void nmea_callback(const nmea_msgs::msg::Sentence::SharedPtr msg) {
-    nmea_s* data = nmea_parse(msg->sentence.c_str(), strlen(msg->sentence.c_str()), 0);
+    std::string sentence_copy = msg->sentence;
+    nmea_s* data = nmea_parse(&sentence_copy[0], sentence_copy.size(), 0);
 
     if(data != NULL) {
       if(data->type == NMEA_GPGGA) {
-        nmea_gpgga_s gpgga = (nmea_gpgga_s*) data;
+        nmea_gpgga_s* gpgga = (nmea_gpgga_s*) data;
 
         auto fix = sensor_msgs::msg::NavSatFix();
         fix.header.stamp = get_clock()->now();
-        fix.latitude = gpgga.latitude;
-        fix.longitude = gpgga.longitude;
-        fix.altitude = gpgga.altitude;
+        fix.latitude = gpgga->latitude;
+        fix.longitude = gpgga->longitude;
+        fix.altitude = gpgga->altitude;
         publisher_->publish(fix);
       }
     }
