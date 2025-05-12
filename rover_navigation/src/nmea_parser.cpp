@@ -16,15 +16,23 @@ public:
     }
 
 private:
+    double convert_nmea_position_to_double(const nmea_position &pos)
+    {
+        double decimal_degrees = pos.degrees + (pos.minutes / 60.0);
+        if (pos.direction == 'S' || pos.direction == 'W')
+        {
+            decimal_degrees = -decimal_degrees;
+        }
+        return decimal_degrees;
+    }
+
     void nmea_callback(const nmea_msgs::msg::Sentence::SharedPtr msg)
     {
-        // Copier la chaîne NMEA dans un buffer modifiable
         std::string sentence = msg->sentence;
-        char *buffer = &sentence[0]; // chaîne modifiable
+        char *buffer = &sentence[0];
 
-        // Parser la phrase NMEA
         nmea_s *data = nmea_parse(buffer, sentence.size(), 0);
-        if (data == nullptr)
+        if (!data)
         {
             RCLCPP_WARN(this->get_logger(), "Failed to parse NMEA sentence");
             return;
@@ -32,27 +40,24 @@ private:
 
         if (data->type == NMEA_GPGGA)
         {
-            // Caster vers le type spécifique
             nmea_gpgga_s *gpgga = (nmea_gpgga_s *)data;
 
             auto fix = sensor_msgs::msg::NavSatFix();
             fix.header.stamp = this->get_clock()->now();
 
-            fix.latitude = gpgga->latitude;
-            fix.longitude = gpgga->longitude;
+            fix.latitude = convert_nmea_position_to_double(gpgga->latitude);
+            fix.longitude = convert_nmea_position_to_double(gpgga->longitude);
             fix.altitude = gpgga->altitude;
 
             publisher_->publish(fix);
         }
 
-        // Libérer la mémoire allouée par nmea_parse
         nmea_free(data);
     }
-}
 
-rclcpp::Subscription<nmea_msgs::msg::Sentence>::SharedPtr subscription_;
-rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr publisher_;
-
+    rclcpp::Subscription<nmea_msgs::msg::Sentence>::SharedPtr subscription_;
+    rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr publisher_;
+};
 
 int main(int argc, char **argv)
 {
