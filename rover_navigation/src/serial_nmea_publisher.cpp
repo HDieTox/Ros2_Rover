@@ -2,6 +2,8 @@
 #include "std_msgs/msg/string.hpp"
 #include <libserial/SerialPort.h>
 
+using namespace LibSerial;
+
 class NmeaPublisherNode : public rclcpp::Node
 {
 public:
@@ -11,8 +13,6 @@ public:
         // Publisher sur le topic /nmea
         nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 20);
 
-        // Ouvre le port série UART du CM5 (exemple : "/dev/ttyS1", à adapter selon ta config)
-        // Baudrate typique pour ZED-F9P UART : 115200 ou 460800 bps
         if (!serial_port_.Open("/dev/ttyAMA0", 38400))
         {
             RCLCPP_ERROR(this->get_logger(), "Impossible d'ouvrir le port série /dev/ttyAMA0");
