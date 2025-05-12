@@ -13,11 +13,18 @@ public:
         // Publisher sur le topic /nmea
         nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 20);
 
-        if (!serial_port_.Open("/dev/ttyAMA0", 38400))
-        {
-            RCLCPP_ERROR(this->get_logger(), "Impossible d'ouvrir le port série /dev/ttyAMA0");
-            rclcpp::shutdown();
-            return;
+        std::string port = "/dev/ttyAMA0";
+
+        try {
+            serial_port_.Open(port);
+            serial_port_.SetBaudRate(BaudRate::BAUD_38400);
+            serial_port_.SetCharacterSize(CharacterSize::CHAR_SIZE_8);
+            serial_port_.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
+            serial_port_.SetParity(Parity::PARITY_NONE);
+            serial_port_.SetStopBits(StopBits::STOP_BITS_1);
+            RCLCPP_INFO(get_logger(), "Port série %s ouvert.", port.c_str());
+        } catch (const OpenFailed&) {
+            RCLCPP_ERROR(get_logger(), "Impossible d'ouvrir le port série %s", port.c_str());
         }
 
         // Timer pour lire périodiquement les données série
@@ -36,8 +43,12 @@ private:
     {
         std::string line;
         // Lire une ligne complète NMEA (terminée par \n)
-        while (serial_port_.ReadLine(line))
-        {
+        while (serial_port_.ReadLine(line) != nullptr) {
+            // Vérifier si la ligne est valide
+            if (line.empty() || line[0] != '$') {
+                RCLCPP_WARN(this->get_logger(), "Invalid NMEA line: %s", line.c_str());
+                continue;
+            }
             // Publier la ligne NMEA reçue sur /nmea
             auto msg = std_msgs::msg::String();
             msg.data = line;
