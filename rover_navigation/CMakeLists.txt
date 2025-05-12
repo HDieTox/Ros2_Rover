@@ -10,7 +10,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
-find_library(LIBNMEA_LIB libnmea PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
+find_library(LIBNMEA_LIB libnmea PATHS /usr/local/lib)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
