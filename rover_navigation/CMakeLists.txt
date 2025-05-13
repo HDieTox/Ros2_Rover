@@ -12,7 +12,7 @@ endif()
 find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
 
 
-add_library(minmea STATIC src/minmea.c)
+add_library(${MINMEA_LIB} STATIC src/minmea.c)
 target_include_directories(minmea PUBLIC include/rover_navigation)
 
 
@@ -20,9 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rcl REQUIRED)           # Ajouté explicitement
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(nmea_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(geographic_msgs REQUIRED)
 
 add_executable(nmea_parser src/nmea_parser.cpp)
 
@@ -38,7 +36,7 @@ ament_target_dependencies(nmea_parser
 
 
 target_link_libraries(nmea_parser 
-  PRIVATE minmea
+  ${MINMEA_LIB}
 )
 
 
