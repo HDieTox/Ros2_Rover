@@ -24,6 +24,7 @@ private:
   {
     if (msg->data.compare(1, 5, "GNGGA") == 0)
     {
+      RCLCPP_DEBUG(this->get_logger(), "Received GNGGA sentence, replacing with GPGGA");
       msg->data.replace(1, 5, "GPGGA");
     }
 
@@ -69,10 +70,6 @@ private:
       }
 
       nmea_free(data);
-    }
-    else
-    {
-      RCLCPP_WARN(this->get_logger(), "Failed to parse NMEA sentence: %s", str.c_str());
     }
   }
 
