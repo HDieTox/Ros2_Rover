@@ -12,7 +12,7 @@ public:
   {
     nmea_sub_ = create_subscription<std_msgs::msg::String>(
         "/nmea", 10,
-        [this](const std_msgs::msg::String msg)
+        [this](const std_msgs::msg::String::SharedPtr msg)
         {
           nmea_callback(msg);
         });
