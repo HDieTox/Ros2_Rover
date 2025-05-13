@@ -1,7 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include "std_msgs/msg/string.hpp"
 #include <sensor_msgs/msg/nav_sat_fix.hpp>
-#include <minmea.h>
+#include "rover_navigation/minmea.h"
 
 class NMEAParser : public rclcpp::Node
 {

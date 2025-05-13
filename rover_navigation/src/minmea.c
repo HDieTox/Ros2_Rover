@@ -6,7 +6,7 @@
  * published by Sam Hocevar. See the COPYING file for more details.
  */
 
-#include "minmea.h"
+#include "rover_navigation/minmea.h"
 
 #include <stdlib.h>
 #include <string.h>
