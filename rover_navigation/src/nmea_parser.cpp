@@ -16,13 +16,6 @@ public:
           nmea_callback(msg);
         });
 
-    ppm_sub_ = create_subscription<std_msgs::msg::Int16MultiArray>(
-        "/pwm_manual_raw", 10,
-        [this](const std_msgs::msg::Int16MultiArray::SharedPtr msg)
-        {
-          processPPM(msg);
-        });
-
     publisher_ = create_publisher<sensor_msgs::msg::NavSatFix>("/gps/fix", 10);
 
     RCLCPP_INFO(this->get_logger(), "NMEA Parser Node started");
