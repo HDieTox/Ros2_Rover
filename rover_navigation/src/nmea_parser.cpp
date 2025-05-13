@@ -9,22 +9,22 @@ class NMEAParser : public rclcpp::Node
 public:
   NMEAParser() : Node("nmea_parser")
   {
-    subscription_ = create_subscription<nmea_msgs::msg::Sentence>(
+    nmea_sub_ = create_subscription<nmea_msgs::msg::String>(
         "/nmea", 10,
-        [this](const nmea_msgs::msg::Sentence::SharedPtr msg)
+        [this](const nmea_msgs::msg::String::SharedPtr msg)
         {
           nmea_callback(msg);
         });
 
-    publisher_ = create_publisher<sensor_msgs::msg::NavSatFix>("/gps/fix", 10);
+    gps_pub_ = create_publisher<sensor_msgs::msg::NavSatFix>("/gps/fix", 10);
 
     RCLCPP_INFO(this->get_logger(), "NMEA Parser Node started");
   }
 
 private:
-  void nmea_callback(const nmea_msgs::msg::Sentence::SharedPtr msg)
+  void nmea_callback(const nmea_msgs::msg::String::SharedPtr msg)
   {
-    std::string sentence_copy = msg->sentence;
+    std::string sentence_copy = msg->string;
     RCLCPP_INFO(this->get_logger(), "Received NMEA length: %ld", sentence_copy.length());
 
     nmea_s *data = nmea_parse(&sentence_copy[0], strlen(&sentence_copy[0]), 0);
@@ -54,8 +54,8 @@ private:
     nmea_free(data);
   }
 
-  rclcpp::Subscription<nmea_msgs::msg::Sentence>::SharedPtr subscription_;
-  rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr publisher_;
+  rclcpp::Subscription<nmea_msgs::msg::Sentence>::SharedPtr nmea_sub_;
+  rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr gps_pub_;
 };
 
 int main(int argc, char **argv)
