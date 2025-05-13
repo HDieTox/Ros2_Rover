@@ -22,9 +22,9 @@ public:
 private:
   void nmea_callback(const std_msgs::msg::String::SharedPtr msg)
   {
-    if (msg.compare(3, 5, "GNGGA") == 0)
+    if (msg->data.compare(3, 5, "GNGGA") == 0)
     {
-      msg.replace(3, 5, "GPGGA");
+      msg->data.replace(3, 5, "GPGGA");
     }
 
     const std::string &str = msg->data;
