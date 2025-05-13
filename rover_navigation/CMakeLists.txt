@@ -13,18 +13,40 @@ find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
 find_library(LIBNMEA_LIB nmea PATHS /usr/local/lib)
 
 find_package(ament_cmake REQUIRED)
+find_package(rcl REQUIRED)           # Ajouté explicitement
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(nmea_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
 
 add_executable(nmea_parser src/nmea_parser.cpp)
-target_link_libraries(nmea_parser ${rclcpp_LIBRARIES} ${LIBNMEA_LIB})
-ament_target_dependencies(nmea_parser rclcpp std_msgs sensor_msgs nmea_msgs)
+
+# Lier les dépendances ROS 2 via ament_target_dependencies
+ament_target_dependencies(nmea_parser
+  rcl
+  rclcpp
+  std_msgs
+  sensor_msgs
+  nmea_msgs
+  geographic_msgs
+)
+
+# Lier les bibliothèques externes
+target_link_libraries(nmea_parser
+  ${LIBNMEA_LIB}
+)
 
 add_executable(serial_nmea_publisher src/serial_nmea_publisher.cpp)
-target_link_libraries(serial_nmea_publisher ${LIBSERIAL_LIB})
-ament_target_dependencies(serial_nmea_publisher rclcpp std_msgs)
+
+ament_target_dependencies(serial_nmea_publisher
+  rclcpp
+  std_msgs
+)
+
+target_link_libraries(serial_nmea_publisher
+  ${LIBSERIAL_LIB}
+)
 
 install(TARGETS
   nmea_parser
