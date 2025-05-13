@@ -29,8 +29,6 @@ ament_target_dependencies(nmea_parser
   rclcpp
   std_msgs
   sensor_msgs
-  nmea_msgs
-  geographic_msgs
 )
 
 
