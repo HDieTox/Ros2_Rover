@@ -50,7 +50,7 @@ private:
     }
     else
     {
-      RCLCPP_WARN(this->get_logger(), "DATA ++ NULL :: Failed to parse NMEA sentence: %s", msg.c_str());
+      RCLCPP_WARN(this->get_logger(), "DATA ++ NULL :: Failed to parse NMEA sentence: %s", msg->data.c_str());
     }
 
     nmea_free(data);
