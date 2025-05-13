@@ -49,18 +49,9 @@ private:
         fix.header.frame_id = "gps";
 
         // Calcul latitude
-        double latitude = gpgga->latitude.degrees + (gpgga->latitude.minutes / 60.0);
-        if (gpgga->latitude.direction == 'S' || gpgga->latitude.direction == 's')
-          latitude = -latitude;
+        fix.latitude = gpgga->latitude.value;
+        fix.longitude = gpgga->longitude.value;
 
-        // Calcul longitude
-        double longitude = gpgga->longitude.degrees + (gpgga->longitude.minutes / 60.0);
-        if (gpgga->longitude.direction == 'W' || gpgga->longitude.direction == 'w')
-          longitude = -longitude;
-
-        fix.latitude = latitude;
-        fix.longitude = longitude;
-        fix.altitude = gpgga->altitude;
 
         // Statut GPS (fix)
         fix.status.status = sensor_msgs::msg::NavSatStatus::STATUS_FIX;
