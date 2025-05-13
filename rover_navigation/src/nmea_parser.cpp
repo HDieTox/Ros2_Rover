@@ -29,9 +29,9 @@ private:
       return;
     }
 
-    if (nmea_sentence.compare(3, 5, "GNGGA") == 0)
+    if (str.compare(3, 5, "GNGGA") == 0)
     {
-      nmea_sentence.replace(3, 5, "GPGGA");
+      str.replace(3, 5, "GPGGA");
     }
 
     // Préparer buffer avec terminaison nulle
