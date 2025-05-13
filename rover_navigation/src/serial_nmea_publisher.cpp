@@ -35,7 +35,7 @@ public:
             std::chrono::milliseconds(10),
             std::bind(&NmeaPublisherNode::readSerialData, this));
     }
-
+*
     ~NmeaPublisherNode()
     {
         serial_port_.Close();

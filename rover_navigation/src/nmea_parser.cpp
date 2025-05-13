@@ -27,6 +27,7 @@ private:
         fix.latitude = gpgga->latitude.degrees + (gpgga->latitude.minutes / 60.0);
         fix.longitude = gpgga->longitude.degrees + (gpgga->longitude.minutes / 60.0);
         fix.altitude = gpgga->altitude;
+        RCLCPP_INFO(this->get_logger(), "Latitude=%f :: Longitude=%f :: Altitude=%f :: \n", fix.latitude, fix.longitude, fix.altitude);
         publisher_->publish(fix);
       }
     }
