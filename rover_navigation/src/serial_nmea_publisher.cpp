@@ -38,14 +38,16 @@ public:
 
     ~NmeaPublisherNode()
     {
-        serial_port_.Close();
+        if (serial_port_.IsOpen()) {
+            serial_port_.Close();
+        }
     }
 
 private:
     void readSerialData()
     {
         std::string line;
-        serial_port_.ReadLine(line); // lit une ligne dans 'line'
+        serial_port_.ReadLine(line,'\n',500); // lit une ligne dans 'line'
 
         // Vérifier si la ligne est vide ou invalide
         if (line.empty() || line[0] != '$')
