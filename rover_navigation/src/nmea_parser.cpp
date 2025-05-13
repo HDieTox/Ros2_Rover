@@ -12,7 +12,7 @@ public:
   {
     nmea_sub_ = create_subscription<std_msgs::msg::String>(
         "/nmea", 10,
-        [this](const std_msgs::msg::String msg){
+        [this](std_msgs::msg::String msg){
           nmea_callback(msg);
         });
 
@@ -22,7 +22,7 @@ public:
   }
 
 private:
-  void nmea_callback(const std_msgs::msg::String::SharedPtr msg)
+  void nmea_callback(std_msgs::msg::String::SharedPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "Received NMEA length: %ld", msg->data.size());
 
