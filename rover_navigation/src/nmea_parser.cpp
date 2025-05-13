@@ -19,6 +19,9 @@ private:
     nmea_s* data = nmea_parse(&sentence_copy[0], sentence_copy.size(), 0);
 
     if(data != NULL) {
+      RCLCPP_INFO(this->get_logger(), "Received NMEA sentence: %s :: Type: %d", data->sentence, data->type);
+      RCLCPP_INFO(this->get_logger(), "Type: %d", data->type);
+
       if(data->type == NMEA_GPGGA) {
         nmea_gpgga_s* gpgga = (nmea_gpgga_s*) data;
 

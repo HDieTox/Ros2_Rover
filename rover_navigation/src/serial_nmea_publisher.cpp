@@ -11,7 +11,7 @@ public:
         : Node("nmea_publisher_node")
     {
         // Publisher sur le topic /nmea
-        nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 20);
+        nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 10);
 
         std::string port = "/dev/ttyAMA0";
 
