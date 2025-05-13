@@ -18,7 +18,9 @@ public:
 private:
   void nmea_callback(const nmea_msgs::msg::Sentence::SharedPtr msg) {
     std::string sentence_copy = msg->sentence;
-    nmea_s* data = nmea_parse(&sentence_copy[0], sentence_copy.size(), 0);
+    RCLCPP_INFO(this->get_logger(), "Received NMEA length: %d", sentence_copy.length());
+
+    nmea_s* data = nmea_parse(&sentence_copy[0], strlen(sentence_copy), 0);
 
     if(data != NULL) {
       RCLCPP_INFO(this->get_logger(), "Type: %d", data->type);
