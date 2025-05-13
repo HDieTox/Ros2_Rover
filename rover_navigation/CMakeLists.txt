@@ -12,6 +12,7 @@ endif()
 find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
 find_library(LIBNMEA_LIB nmea PATHS /usr/local/lib)
 
+find_package(ament_cmake REQUIRED)
 find_package(rcl REQUIRED)           # Ajouté explicitement
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
