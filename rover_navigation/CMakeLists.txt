@@ -13,7 +13,6 @@ find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
 
 
 add_library(${MINMEA_LIB} STATIC src/minmea.c)
-target_include_directories(minmea PUBLIC include/rover_navigation)
 
 
 find_package(ament_cmake REQUIRED)
