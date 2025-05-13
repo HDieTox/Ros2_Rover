@@ -24,9 +24,10 @@ public:
 private:
   void nmea_callback(const std_msgs::msg::String::SharedPtr msg)
   {
-    RCLCPP_INFO(this->get_logger(), "Received NMEA length: %ld", msg.length());
+    RCLCPP_INFO(this->get_logger(), "Received NMEA length: %ld", msg->data.size());
 
-    nmea_s *data = nmea_parse(msg, strlen(msg.c_str()), 0);
+    nmea_s *data = nmea_parse(msg->data.c_str(), msg->data.size(), 0);
+
 
     if (data != NULL)
     {
