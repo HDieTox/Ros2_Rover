@@ -1,8 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include "std_msgs/msg/string.hpp"
 #include <sensor_msgs/msg/nav_sat_fix.hpp>
-#include <nmea.h>
-#include <nmea/gpgga.h>
+#include <minmea.h>
 
 class NMEAParser : public rclcpp::Node
 {
@@ -22,54 +21,63 @@ public:
 private:
   void nmea_callback(const std_msgs::msg::String::SharedPtr msg)
   {
-    if (msg->data.compare(1, 5, "GNGGA") == 0)
-    {
-      RCLCPP_DEBUG(this->get_logger(), "Received GNGGA sentence, replacing with GPGGA");
-      msg->data.replace(1, 5, "GPGGA");
-    }
+    const std::string &sentence = msg->data;
 
-    const std::string &str = msg->data;
-    if (str.empty())
+    if (sentence.empty())
     {
       RCLCPP_WARN(this->get_logger(), "Received empty NMEA sentence");
       return;
     }
 
+    // Minmea attend une chaîne C terminée par '\0'
+    const char *nmea_str = sentence.c_str();
 
-    // Préparer buffer avec terminaison nulle
-    std::vector<char> buffer(str.begin(), str.end());
-    buffer.push_back('\0');
-
-    // Appeler nmea_parse avec la taille sans le '\0'
-    nmea_s *data = nmea_parse(buffer.data(), str.size(), 0);
-
-    if (data != nullptr)
+    // Parser la phrase NMEA (vérifie checksum automatiquement)
+    if (minmea_check(nmea_str))
     {
-      RCLCPP_DEBUG(this->get_logger(), "Parsed NMEA sentence type: %d", data->type);
+      // Identifier le type de phrase
+      enum minmea_sentence_id id = minmea_sentence_id(nmea_str, false);
 
-      if (data->type == NMEA_GPGGA)
+      if (id == MINMEA_SENTENCE_GGA)
       {
-        nmea_gpgga_s *gpgga = reinterpret_cast<nmea_gpgga_s *>(data);
+        struct minmea_gga frame;
+        if (minmea_parse_gga(&frame, nmea_str))
+        {
+          // Convertir latitude et longitude en degrés décimaux
+          double latitude = minmea_tocoord(&frame.latitude);
+          double longitude = minmea_tocoord(&frame.longitude);
 
-        auto fix = sensor_msgs::msg::NavSatFix();
-        fix.header.stamp = this->now();
-        fix.header.frame_id = "gps";
+          // Créer et remplir le message NavSatFix
+          auto fix = sensor_msgs::msg::NavSatFix();
+          fix.header.stamp = this->now();
+          fix.header.frame_id = "gps";
 
-        // Calcul latitude
-        fix.latitude = gpgga->latitude.degrees + (gpgga->latitude.minutes / 60.0);
-        fix.longitude = gpgga->longitude.degrees + (gpgga->longitude.minutes / 60.0);
+          fix.latitude = latitude;
+          fix.longitude = longitude;
+          fix.altitude = frame.altitude;
 
-        RCLCPP_INFO(this->get_logger(), "GPS Fix: lat=%.6f, lon=%.6f, alt=%.2f",
-                    fix.latitude, fix.longitude, fix.altitude);
+          // Statut du fix GPS
+          fix.status.status = (frame.fix_quality > 0) ? sensor_msgs::msg::NavSatStatus::STATUS_FIX : sensor_msgs::msg::NavSatStatus::STATUS_NO_FIX;
+          fix.status.service = sensor_msgs::msg::NavSatStatus::SERVICE_GPS;
 
-        gps_pub_->publish(fix);
+          RCLCPP_INFO(this->get_logger(), "GPS Fix: lat=%.6f, lon=%.6f, alt=%.2f (quality=%d)",
+                      fix.latitude, fix.longitude, fix.altitude, frame.fix_quality);
+
+          gps_pub_->publish(fix);
+        }
+        else
+        {
+          RCLCPP_WARN(this->get_logger(), "Failed to parse GGA sentence");
+        }
       }
       else
       {
-        RCLCPP_DEBUG(this->get_logger(), "NMEA sentence type %d not handled", data->type);
+        RCLCPP_DEBUG(this->get_logger(), "Received NMEA sentence type %d not handled", id);
       }
-
-      nmea_free(data);
+    }
+    else
+    {
+      RCLCPP_WARN(this->get_logger(), "Invalid NMEA sentence (checksum failed): %s", sentence.c_str());
     }
   }
 

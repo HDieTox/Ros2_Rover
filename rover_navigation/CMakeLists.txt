@@ -10,7 +10,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
-find_library(LIBNMEA_LIB nmea PATHS /usr/local/lib)
+
+
+add_library(minmea STATIC src/minmea.c)
+target_include_directories(minmea PUBLIC include/rover_navigation)
+
 
 find_package(ament_cmake REQUIRED)
 find_package(rcl REQUIRED)           # Ajouté explicitement
@@ -32,10 +36,13 @@ ament_target_dependencies(nmea_parser
   geographic_msgs
 )
 
-# Lier les bibliothèques externes
-target_link_libraries(nmea_parser
-  ${LIBNMEA_LIB}
+
+target_link_libraries(nmea_parser 
+  PRIVATE minmea
 )
+
+
+# Lier les bibliothèques externes
 
 add_executable(serial_nmea_publisher src/serial_nmea_publisher.cpp)
 
