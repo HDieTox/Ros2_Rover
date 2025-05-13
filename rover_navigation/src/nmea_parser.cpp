@@ -33,7 +33,11 @@ private:
         RCLCPP_INFO(this->get_logger(), "Latitude=%f :: Longitude=%f :: Altitude=%f :: \n", fix.latitude, fix.longitude, fix.altitude);
         publisher_->publish(fix);
       }
+    }else
+    {
+      RCLCPP_WARN(this->get_logger(), "DATA ++ NULL :: Failed to parse NMEA sentence: %s", msg->sentence.c_str());
     }
+    
 
     nmea_free(data);
   }
