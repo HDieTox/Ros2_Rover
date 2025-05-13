@@ -9,7 +9,7 @@ class NMEAParser : public rclcpp::Node
 public:
   NMEAParser() : Node("nmea_parser")
   {
-    nmea_sub_ = create_subscription<nmea_msgs::msg::String>(
+    nmea_sub_ = create_subscription<std_msgs::msg::String>(
         "/nmea", 10,
         [this](const nmea_msgs::msg::String::SharedPtr msg)
         {
@@ -22,7 +22,7 @@ public:
   }
 
 private:
-  void nmea_callback(const nmea_msgs::msg::String::SharedPtr msg)
+  void nmea_callback(const std_msgs::msg::String::SharedPtr msg)
   {
     std::string sentence_copy = msg->string;
     RCLCPP_INFO(this->get_logger(), "Received NMEA length: %ld", sentence_copy.length());
