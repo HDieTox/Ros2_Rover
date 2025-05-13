@@ -2,7 +2,7 @@
 #include "std_msgs/msg/string.hpp"
 #include <sensor_msgs/msg/nav_sat_fix.hpp>
 #include <nmea.h>
-#include <nmea/gngga.h>
+#include <nmea/gpgga.h>
 
 class NMEAParser : public rclcpp::Node
 {
@@ -29,6 +29,11 @@ private:
       return;
     }
 
+    if (nmea_sentence.compare(3, 5, "GNGGA") == 0)
+    {
+      nmea_sentence.replace(3, 5, "GPGGA");
+    }
+
     // Préparer buffer avec terminaison nulle
     std::vector<char> buffer(str.begin(), str.end());
     buffer.push_back('\0');
@@ -40,21 +45,17 @@ private:
     {
       RCLCPP_DEBUG(this->get_logger(), "Parsed NMEA sentence type: %d", data->type);
 
-      if (data->type == NMEA_GNGGA)
+      if (data->type == NMEA_GPGGA)
       {
-        nmea_gngga_s *gngga = reinterpret_cast<nmea_gngga_s *>(data);
+        nmea_gpgga_s *gpgga = reinterpret_cast<nmea_gpgga_s *>(data);
 
         auto fix = sensor_msgs::msg::NavSatFix();
         fix.header.stamp = this->now();
         fix.header.frame_id = "gps";
 
         // Calcul latitude
-        fix.latitude = gngga->latitude.degrees + (gngga->latitude.minutes / 60.0);
-        fix.longitude = gngga->longitude.degrees + (gngga->longitude.minutes / 60.0);
-
-        // Statut GPS (fix)
-        fix.status.status = sensor_msgs::msg::NavSatStatus::STATUS_FIX;
-        fix.status.service = sensor_msgs::msg::NavSatStatus::SERVICE_GPS;
+        fix.latitude = gpgga->latitude.degrees + (gpgga->latitude.minutes / 60.0);
+        fix.longitude = gpgga->longitude.degrees + (gpgga->longitude.minutes / 60.0);
 
         RCLCPP_INFO(this->get_logger(), "GPS Fix: lat=%.6f, lon=%.6f, alt=%.2f",
                     fix.latitude, fix.longitude, fix.altitude);
