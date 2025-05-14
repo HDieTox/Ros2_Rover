@@ -33,14 +33,14 @@ private:
     const char *nmea_str = sentence.c_str();
 
     // Parser la phrase NMEA (vérifie checksum automatiquement)
-    if (minmea_check(nmea_str))
+    if (minmea_check(nmea_str,false))
     {
       // Identifier le type de phrase
       enum minmea_sentence_id id = minmea_sentence_id(nmea_str, false);
 
       if (id == MINMEA_SENTENCE_GGA)
       {
-        struct minmea_gga frame;
+        struct minmea_sentence_gga frame;
         if (minmea_parse_gga(&frame, nmea_str))
         {
           // Convertir latitude et longitude en degrés décimaux
