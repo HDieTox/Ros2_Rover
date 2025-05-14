@@ -54,7 +54,7 @@ private:
 
           fix.latitude = latitude;
           fix.longitude = longitude;
-          fix.altitude = frame.altitude;
+          fix.altitude = minmea_tofloat(&frame.altitude);
 
           // Statut du fix GPS
           fix.status.status = (frame.fix_quality > 0) ? sensor_msgs::msg::NavSatStatus::STATUS_FIX : sensor_msgs::msg::NavSatStatus::STATUS_NO_FIX;
