@@ -40,6 +40,8 @@ private:
 
       if (id == MINMEA_SENTENCE_GGA)
       {
+        RCLCPP_INFO(this->get_logger(), "Received NMEA sentence: %s", sentence.c_str());
+
         struct minmea_sentence_gga frame;
         if (minmea_parse_gga(&frame, nmea_str))
         {
