@@ -33,7 +33,7 @@ private:
     const char *nmea_str = sentence.c_str();
 
     // Parser la phrase NMEA (vérifie checksum automatiquement)
-    if (minmea_check(nmea_str,false))
+    if (minmea_check(nmea_str, false))
     {
       // Identifier le type de phrase
       enum minmea_sentence_id id = minmea_sentence_id(nmea_str, false);
@@ -61,6 +61,12 @@ private:
           // Statut du fix GPS
           fix.status.status = (frame.fix_quality > 0) ? sensor_msgs::msg::NavSatStatus::STATUS_FIX : sensor_msgs::msg::NavSatStatus::STATUS_NO_FIX;
           fix.status.service = sensor_msgs::msg::NavSatStatus::SERVICE_GPS;
+
+          if (frame.fix_quality == 0)
+          {
+            RCLCPP_WARN(this->get_logger(), "No GPS fix available, skipping publish");
+            return;
+          }
 
           RCLCPP_INFO(this->get_logger(), "GPS Fix: lat=%.6f, lon=%.6f, alt=%.2f (quality=%d)",
                       fix.latitude, fix.longitude, fix.altitude, frame.fix_quality);
