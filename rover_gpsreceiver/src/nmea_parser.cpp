@@ -1,7 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include "std_msgs/msg/string.hpp"
 #include <sensor_msgs/msg/nav_sat_fix.hpp>
-#include "rover_navigation/minmea.h"
+#include "rover_gpsreceiver/minmea.h"
 
 class NMEAParser : public rclcpp::Node
 {
@@ -13,7 +13,7 @@ public:
         "/nmea", 10,
         std::bind(&NMEAParser::nmea_callback, this, std::placeholders::_1));
 
-    gps_pub_ = create_publisher<sensor_msgs::msg::NavSatFix>("/gps/fix", 10);
+    gps_pub_ = create_publisher<sensor_msgs::msg::NavSatFix>("/gps_fix", 10);
 
     RCLCPP_INFO(this->get_logger(), "NMEA Parser Node started");
   }

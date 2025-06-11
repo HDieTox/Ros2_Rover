@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>rover_navigation</name>
+  <name>rover_mavlink</name>
   <version>0.0.0</version>
-  <description>Everything for the Autonomous navigation</description>
+  <description>Everything for the MavLink Connection</description>
   <maintainer email="tom.compagnon2003@gmail.com">tom</maintainer>
   <license>TODO: License declaration</license>
 
@@ -11,8 +11,8 @@
 
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
-  <depend>serial</depend>
-  <depend>minmea</depend>
+  <depend>geometry_msgs</depend>
+  <depend>mavros_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
