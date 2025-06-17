@@ -71,5 +71,6 @@
         "variant": "cpp",
         "text_encoding": "cpp",
         "stdarg.h": "c"
-    }
+    },
+    "cmake.ignoreCMakeListsMissing": true
 }

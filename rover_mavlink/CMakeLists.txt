@@ -1,26 +1,42 @@
-cmake_minimum_required(VERSION 3.16)
-project(rover_autonomy)
+cmake_minimum_required(VERSION 3.8)
+project(rover_mavlink)
+
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
+find_package(GeographicLib REQUIRED)
+find_package(mavsdk REQUIRED)
 
-# Installation de MAVSDK
-include(FetchContent)
-FetchContent_Declare(
-  mavsdk
-  GIT_REPOSITORY https://github.com/mavlink/MAVSDK.git
-  GIT_TAG v2.0.0
-)
-FetchContent_MakeAvailable(mavsdk)
 
 add_executable(mavlink_bridge src/mavlink_bridge.cpp)
-target_link_libraries(mavlink_bridge ${rclcpp_LIBRARIES} mavsdk::mavsdk)
+ament_target_dependencies(mavlink_bridge
+  rclcpp
+  mavros_msgs
+)
+target_link_libraries(mavlink_bridge
+${mavsdk_LIBRARIES}
+)
 
 add_executable(navigation_node src/navigation_node.cpp)
-target_link_libraries(navigation_node ${rclcpp_LIBRARIES} GeographicLib::GeographicLib)
+ament_target_dependencies(navigation_node
+  rclcpp
+  geometry_msgs
+  mavros_msgs
+)
+target_link_libraries(navigation_node
+${GeographicLib_LIBRARIES}
+)
 
-install(TARGETS mavlink_bridge navigation_node serial_bridge
+install(TARGETS mavlink_bridge navigation_node 
   DESTINATION lib/${PROJECT_NAME})
