@@ -14,7 +14,7 @@ public:
         // Paramètres configurables
         this->declare_parameter("serial_port", "/dev/ttyUSB0");
         this->declare_parameter("baud_rate", 57600);
-        this->declare_parameter("udp_ip", "10.51.11.159");  // IP du PC avec QGroundControl
+        this->declare_parameter("udp_ip", "0.0.0.0");  // IP du PC avec QGroundControl
         this->declare_parameter("udp_port", 14550);
 
         // Récupération des paramètres
