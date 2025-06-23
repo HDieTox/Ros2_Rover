@@ -20,7 +20,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
 find_package(GeographicLib REQUIRED)
-find_package(mavsdk REQUIRED)
+find_package(MAVSDK REQUIRED)
 
 
 add_executable(mavlink_bridge src/mavlink_bridge.cpp)
@@ -29,7 +29,7 @@ ament_target_dependencies(mavlink_bridge
   mavros_msgs
 )
 target_include_directories(mavlink_bridge PRIVATE ${mavsdk_INCLUDE_DIRS})
-target_link_libraries(mavlink_bridge mavsdk::mavsdk)
+target_link_libraries(mavlink_bridge MAVSDK::mavsdk)
 
 add_executable(navigation_node src/navigation_node.cpp)
 ament_target_dependencies(navigation_node
