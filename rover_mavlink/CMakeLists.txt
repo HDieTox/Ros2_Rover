@@ -9,7 +9,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-set(GeographicLib ${GeographicLib_LIBRARIES} "/usr/share/cmake/geographiclib/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
 set(mavsdk ${mavsdk_LIBRARIES} "/usr/local/lib/")
 
 
