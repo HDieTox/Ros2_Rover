@@ -29,6 +29,22 @@ public:
   }
 
 private:
+
+  geometry_msgs::msg::Twist calculate_velocity(double distance, double azimuth);
+
+  // Variables membres à déclarer
+  rclcpp::Subscription<mavros_msgs::msg::WaypointList>::SharedPtr waypoint_sub_;
+  mavros_msgs::msg::WaypointList waypoints_;
+
+  rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr gps_sub_;
+  sensor_msgs::msg::NavSatFix current_gps_;
+
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+
+  rclcpp::TimerBase::SharedPtr timer_;
+
+  size_t current_waypoint_index_ = 0;  // initialisation à 0
+
   void navigate() {
     if (waypoints_.waypoints.empty()) return;
     
