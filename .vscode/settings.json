@@ -70,7 +70,11 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "text_encoding": "cpp",
-        "stdarg.h": "c"
+        "stdarg.h": "c",
+        "xlocinfo": "cpp",
+        "xstring": "cpp",
+        "xtree": "cpp",
+        "xutility": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true
 }
