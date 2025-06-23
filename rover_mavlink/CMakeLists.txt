@@ -28,9 +28,8 @@ ament_target_dependencies(mavlink_bridge
   rclcpp
   mavros_msgs
 )
-target_link_libraries(mavlink_bridge
-${mavsdk_LIBRARIES}
-)
+target_include_directories(mavlink_bridge PRIVATE ${mavsdk_INCLUDE_DIRS})
+target_link_libraries(mavlink_bridge mavsdk::mavsdk)
 
 add_executable(navigation_node src/navigation_node.cpp)
 ament_target_dependencies(navigation_node
