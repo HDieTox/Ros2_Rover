@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>mavlink_bridge</name>
+  <name>rover_mavlink</name>
   <version>0.1.0</version>
   <description>Bridge between serial radio and QGroundControl</description>
   <maintainer email="tom.compagnon@ensea.fr">Tom Compagnon</maintainer>

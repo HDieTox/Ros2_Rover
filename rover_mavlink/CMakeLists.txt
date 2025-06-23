@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(mavlink_bridge)
+project(rover_mavlink)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
