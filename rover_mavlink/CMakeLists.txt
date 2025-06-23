@@ -10,7 +10,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/usr/share/cmake/geographiclib/")
-set(mavsdk ${mavsdk_LIBRARIES} "/usr/local/lib/")
+list(APPEND CMAKE_PREFIX_PATH "/usr/local")
+
 
 
 find_package(ament_cmake REQUIRED)
@@ -19,7 +20,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
 find_package(GeographicLib REQUIRED)
-find_package(mavsdk REQUIRED)
+find_package(MAVSDK REQUIRED)
 
 
 add_executable(mavlink_bridge src/mavlink_bridge.cpp)
