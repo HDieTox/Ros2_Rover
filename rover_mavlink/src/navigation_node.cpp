@@ -30,8 +30,6 @@ public:
 
 private:
 
-  geometry_msgs::msg::Twist calculate_velocity(double distance, double azimuth);
-
   // Variables membres à déclarer
   rclcpp::Subscription<mavros_msgs::msg::WaypointList>::SharedPtr waypoint_sub_;
   mavros_msgs::msg::WaypointList waypoints_;

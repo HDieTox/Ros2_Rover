@@ -3,11 +3,14 @@
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/mission/mission.h>
 #include <iterator>
+#include <algorithm>
+#include <chrono>
+#include <thread>
 
 class MavlinkBridge : public rclcpp::Node
 {
 public:
-  MavlinkBridge() : Node("mavlink_bridge"), mavsdk_()
+  MavlinkBridge() : Node("mavlink_bridge")
   {
     mavsdk_.add_any_connection("udp://0.0.0.0:14550");
     auto system = get_system(mavsdk_);
@@ -39,6 +42,16 @@ private:
       msg.waypoints.push_back(wp);
     }
     publisher_->publish(msg);
+  }
+
+  std::shared_ptr<mavsdk::System> get_system(mavsdk::Mavsdk& mavsdk)
+  {
+    std::this_thread::sleep_for(std::chrono::seconds(2)); // Attendre la connexion
+    auto systems = mavsdk.systems();
+    if (systems.size() == 0) {
+        throw std::runtime_error("No system found");
+    }
+    return systems[0];
   }
 
   mavsdk::Mavsdk mavsdk_;
