@@ -64,7 +64,7 @@ private:
     }
   }
   
-  geometry_msgs::msg::Twist calculate_velocity(double distance, double azimuth) {
+  geometry_msgs::msg::Twist calculate_velocity(double /*distance*/, double azimuth) {
     // Algorithme Pure Pursuit simplifié
     geometry_msgs::msg::Twist cmd;
     cmd.linear.x = 0.5;  // Vitesse constante
