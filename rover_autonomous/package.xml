@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>autonomous_navigation</name>
+  <name>rover_autonomous</name>
   <version>1.0.0</version>
   <description>Package de navigation autonome pour rover terrestre</description>
-  <maintainer email="votre@email.com">Votre Nom</maintainer>
+  <maintainer email="tom.compagnon@ensea.fr">Tom Compagnon</maintainer>
   <license>Apache 2.0</license>
 
   <depend>rclcpp</depend>

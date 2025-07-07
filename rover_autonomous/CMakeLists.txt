@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(autonomous_navigation)
+project(rover_autonomous)
 
 # Configuration standard ROS2
 if(NOT CMAKE_CXX_STANDARD)
@@ -43,11 +43,6 @@ install(DIRECTORY
 
 install(DIRECTORY
   launch
-  DESTINATION share/${PROJECT_NAME}
-)
-
-install(DIRECTORY
-  rviz
   DESTINATION share/${PROJECT_NAME}
 )
 
