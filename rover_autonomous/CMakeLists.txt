@@ -27,7 +27,7 @@ add_executable(ppm_converter src/ppm_converter.cpp)
 target_include_directories(ppm_converter PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-ament_target_dependencies(ppm_converter rclcpp std_msgs)
+ament_target_dependencies(ppm_converter rclcpp std_msgs geometry_msgs)
 
 # Installation
 install(TARGETS
