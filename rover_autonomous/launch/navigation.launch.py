@@ -8,7 +8,7 @@ def generate_launch_description():
             package='autonomous_navigation',
             executable='main_controller',
             name='navigation_controller',
-            parameters=[{'mission_file': '/chemin/vers/mission.plan'}]
+            parameters=[{'mission_file': '../SQUARE.plan'}]
         ),
         
         # Convertisseur PPM
@@ -18,4 +18,3 @@ def generate_launch_description():
             name='ppm_interface'
         )
     ])
-p
