@@ -1,6 +1,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include <libserial/SerialPort.h>
+#include <vector>
+#include <algorithm>
 
 using namespace LibSerial;
 
@@ -12,8 +14,8 @@ public:
     {
         nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 10);
 
-        // Modification du port série pour Ubuntu 24.04
-        std::string port = "/dev/ttyS0"; // Changé ttyAMA0 → ttyS0
+        // Port série pour Ubuntu 24.04 sur CM5
+        std::string port = "/dev/ttyS0";  // Essayer aussi "/dev/ttyAMA0" ou "/dev/ttyUSB0" si nécessaire
 
         try
         {
@@ -23,10 +25,7 @@ public:
             serial_port_.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
             serial_port_.SetParity(Parity::PARITY_NONE);
             serial_port_.SetStopBits(StopBits::STOP_BITS_1);
-
-            // Ajout d'un délai pour éviter les timeouts immédiats
-            serial_port_.timeout(100); // Timeout de 1000 ms
-
+            
             RCLCPP_INFO(get_logger(), "Port série %s ouvert avec succès", port.c_str());
         }
         catch (const OpenFailed &)
@@ -34,21 +33,20 @@ public:
             RCLCPP_FATAL(get_logger(), "Échec d'ouverture du port %s", port.c_str());
             rclcpp::shutdown();
         }
-        catch (const std::exception &e)
+        catch (const std::exception& e)
         {
             RCLCPP_FATAL(get_logger(), "Erreur initialisation: %s", e.what());
             rclcpp::shutdown();
         }
 
         timer_ = this->create_wall_timer(
-            std::chrono::milliseconds(100), // Réduire la fréquence (100ms)
+            std::chrono::milliseconds(10),  // Fréquence de lecture
             std::bind(&NmeaPublisherNode::readSerialData, this));
     }
 
     ~NmeaPublisherNode()
     {
-        if (serial_port_.IsOpen())
-        {
+        if (serial_port_.IsOpen()) {
             serial_port_.Close();
         }
     }
@@ -56,39 +54,66 @@ public:
 private:
     void readSerialData()
     {
-        if (!serial_port_.IsOpen())
-        {
+        if (!serial_port_.IsOpen()) {
             return;
         }
 
         try
         {
-            std::string line;
-            serial_port_.ReadLine(line, '\n', 1000); // Timeout augmenté
+            // Lire toutes les données disponibles sans timeout
+            std::string data;
+            while (serial_port_.IsDataAvailable()) {
+                char c;
+                serial_port_.ReadByte(c);  // Lecture non bloquante
+                data += c;
+            }
 
-            if (!line.empty() && line[0] == '$')
-            {
-                auto msg = std_msgs::msg::String();
-                msg.data = line;
-                nmea_pub_->publish(msg);
-                RCLCPP_DEBUG(this->get_logger(), "NMEA publié: %s", line.c_str());
+            if (!data.empty()) {
+                // Ajouter les nouvelles données au buffer
+                buffer_ += data;
+                
+                // Traiter toutes les lignes complètes
+                size_t pos = 0;
+                while ((pos = buffer_.find('\n')) != std::string::npos) {
+                    if (pos == 0) {  // Ligne vide
+                        buffer_.erase(0, 1);
+                        continue;
+                    }
+                    
+                    std::string line = buffer_.substr(0, pos);
+                    buffer_.erase(0, pos + 1);
+                    
+                    // Nettoyer les retours chariot
+                    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+                    
+                    if (!line.empty() && line[0] == '$') {
+                        auto msg = std_msgs::msg::String();
+                        msg.data = line;
+                        nmea_pub_->publish(msg);
+                        RCLCPP_DEBUG(this->get_logger(), "NMEA publié: %s", line.c_str());
+                    }
+                }
             }
         }
-        // Gestion spécifique du timeout
-        catch (const ReadTimeout &)
-        {
-            // Timeout normal, pas d'erreur fatale
-            RCLCPP_DEBUG(this->get_logger(), "Timeout lecture (aucune donnée)");
-        }
-        catch (const std::exception &e)
+        catch (const std::exception& e)
         {
             RCLCPP_ERROR(this->get_logger(), "Erreur lecture: %s", e.what());
+            // Tentative de réouverture en cas d'erreur
+            try {
+                if (!serial_port_.IsOpen()) {
+                    serial_port_.Open(port_);
+                }
+            } catch (...) {
+                RCLCPP_ERROR(get_logger(), "Échec réouverture du port série");
+            }
         }
     }
 
     SerialPort serial_port_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmea_pub_;
     rclcpp::TimerBase::SharedPtr timer_;
+    std::string buffer_;
+    std::string port_ = "/dev/ttyS0";  // Stocker le port pour réouverture
 };
 
 int main(int argc, char *argv[])
