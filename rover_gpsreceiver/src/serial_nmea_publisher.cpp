@@ -10,10 +10,10 @@ public:
     NmeaPublisherNode()
         : Node("nmea_publisher_node")
     {
-        // Publisher sur le topic /nmea
         nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 10);
 
-        std::string port = "/dev/ttyAMA0";
+        // Modification du port série pour Ubuntu 24.04
+        std::string port = "/dev/ttyS0"; // Changé ttyAMA0 → ttyS0
 
         try
         {
@@ -23,22 +23,32 @@ public:
             serial_port_.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
             serial_port_.SetParity(Parity::PARITY_NONE);
             serial_port_.SetStopBits(StopBits::STOP_BITS_1);
-            RCLCPP_INFO(get_logger(), "Port série %s ouvert.", port.c_str());
+
+            // Ajout d'un délai pour éviter les timeouts immédiats
+            serial_port_.SetTimeout(1000); // Timeout de 1000 ms
+
+            RCLCPP_INFO(get_logger(), "Port série %s ouvert avec succès", port.c_str());
         }
         catch (const OpenFailed &)
         {
-            RCLCPP_ERROR(get_logger(), "Impossible d'ouvrir le port série %s", port.c_str());
+            RCLCPP_FATAL(get_logger(), "Échec d'ouverture du port %s", port.c_str());
+            rclcpp::shutdown();
+        }
+        catch (const std::exception &e)
+        {
+            RCLCPP_FATAL(get_logger(), "Erreur initialisation: %s", e.what());
+            rclcpp::shutdown();
         }
 
-        // Timer pour lire périodiquement les données série
         timer_ = this->create_wall_timer(
-            std::chrono::milliseconds(10),
+            std::chrono::milliseconds(100), // Réduire la fréquence (100ms)
             std::bind(&NmeaPublisherNode::readSerialData, this));
     }
 
     ~NmeaPublisherNode()
     {
-        if (serial_port_.IsOpen()) {
+        if (serial_port_.IsOpen())
+        {
             serial_port_.Close();
         }
     }
@@ -46,21 +56,33 @@ public:
 private:
     void readSerialData()
     {
-        std::string line;
-        serial_port_.ReadLine(line,'\n',500); // lit une ligne dans 'line'
-
-        // Vérifier si la ligne est vide ou invalide
-        if (line.empty() || line[0] != '$')
+        if (!serial_port_.IsOpen())
         {
-            RCLCPP_WARN(this->get_logger(), "Invalid NMEA line: %s", line.c_str());
+            return;
         }
-        else
+
+        try
         {
-            // Publier la ligne NMEA reçue sur /nmea
-            auto msg = std_msgs::msg::String();
-            msg.data = line;
-            nmea_pub_->publish(msg);
-            RCLCPP_INFO(this->get_logger(), "Published NMEA: %s", line.c_str());
+            std::string line;
+            serial_port_.ReadLine(line, '\n', 1000); // Timeout augmenté
+
+            if (!line.empty() && line[0] == '$')
+            {
+                auto msg = std_msgs::msg::String();
+                msg.data = line;
+                nmea_pub_->publish(msg);
+                RCLCPP_DEBUG(this->get_logger(), "NMEA publié: %s", line.c_str());
+            }
+        }
+        // Gestion spécifique du timeout
+        catch (const ReadTimeout &)
+        {
+            // Timeout normal, pas d'erreur fatale
+            RCLCPP_DEBUG(this->get_logger(), "Timeout lecture (aucune donnée)");
+        }
+        catch (const std::exception &e)
+        {
+            RCLCPP_ERROR(this->get_logger(), "Erreur lecture: %s", e.what());
         }
     }
 
