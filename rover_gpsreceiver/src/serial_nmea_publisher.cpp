@@ -25,7 +25,7 @@ public:
             serial_port_.SetStopBits(StopBits::STOP_BITS_1);
 
             // Ajout d'un délai pour éviter les timeouts immédiats
-            serial_port_.SetTimeout(1000); // Timeout de 1000 ms
+            serial_port_.timeout(100); // Timeout de 1000 ms
 
             RCLCPP_INFO(get_logger(), "Port série %s ouvert avec succès", port.c_str());
         }
