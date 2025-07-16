@@ -15,7 +15,7 @@ public:
         nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 10);
 
         // Port série pour Ubuntu 24.04 sur CM5
-        std::string port = "/dev/ttyS0";  // Essayer aussi "/dev/ttyAMA0" ou "/dev/ttyUSB0" si nécessaire
+        std::string port = "/dev/ttyAMAO";  // Essayer aussi "/dev/ttyAMA0" ou "/dev/ttyUSB0" si nécessaire
 
         try
         {
