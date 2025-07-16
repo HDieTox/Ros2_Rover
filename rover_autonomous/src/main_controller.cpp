@@ -122,6 +122,7 @@ private:
         auto msg = geometry_msgs::msg::Twist();
         msg.linear.x = lin;
         msg.angular.z = ang;
+        RCLCPP_INFO(get_logger(), "Publishing navigation command: linear=%.2f m/s angular=%.2f rad/s", linear, angular);
         cmd_pub_->publish(msg);
     }
 
