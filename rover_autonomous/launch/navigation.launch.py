@@ -17,4 +17,11 @@ def generate_launch_description():
             executable='ppm_converter',
             name='ppm_interface'
         )
+
+        # Publication Série
+        Node(
+            package='rover_autonomous',
+            executable='serial_publisher',
+            name='serial_publisher'
+        )
     ])

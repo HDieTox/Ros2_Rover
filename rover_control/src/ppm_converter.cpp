@@ -18,7 +18,7 @@ public:
         declare_parameter("ppm_min", 1000);
         declare_parameter("ppm_max", 2000);
 
-        std::string port = "/dev/ttyAMA0";
+        std::string port = "/dev/ttyAMA3";
 
         try {
             serial_port_.Open(port);
