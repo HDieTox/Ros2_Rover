@@ -16,6 +16,9 @@ add_library(${MINMEA_LIB} STATIC src/minmea.c)
 # Add include dirs for minmea (if headers exist in include/)
 target_include_directories(${MINMEA_LIB} PUBLIC include)
 
+
+
+
 find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
 
 find_package(ament_cmake REQUIRED)
@@ -23,6 +26,7 @@ find_package(rcl REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(GeographicLib REQUIRED)
 
 add_executable(nmea_parser src/nmea_parser.cpp)
 ament_target_dependencies(nmea_parser
@@ -31,9 +35,7 @@ ament_target_dependencies(nmea_parser
   std_msgs
   sensor_msgs
 )
-target_link_libraries(nmea_parser 
-  ${MINMEA_LIB}
-)
+target_link_libraries(nmea_parser ${MINMEA_LIB} Geographic)
 
 add_executable(serial_nmea_publisher src/serial_nmea_publisher.cpp)
 ament_target_dependencies(serial_nmea_publisher

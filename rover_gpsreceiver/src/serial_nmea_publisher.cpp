@@ -113,7 +113,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr nmea_pub_;
     rclcpp::TimerBase::SharedPtr timer_;
     std::string buffer_;
-    std::string port_ = "/dev/ttyS0";  // Stocker le port pour réouverture
+    std::string port_ = "/dev/ttyAMA0";  // Stocker le port pour réouverture
 };
 
 int main(int argc, char *argv[])
