@@ -1,6 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
-#include <LibSerial/SerialPort.h>
+#include <libserial/SerialPort.h>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
