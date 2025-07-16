@@ -8,14 +8,6 @@
 
 #include "rover_autonomous/mission_parser.hpp"
 
-struct MissionPoint
-{
-    double latitude;
-    double longitude;
-    double altitude;
-    double tolerance; // mètres
-};
-
 class NavigationController : public rclcpp::Node
 {
 public:
@@ -150,6 +142,8 @@ private:
     std::optional<sensor_msgs::msg::NavSatFix> last_position_, prev_position_;
     std::vector<MissionPoint> mission_points_;
     size_t current_waypoint_ = 0;
+
+    std::vector<MissionPoint> mission_points_;
 };
 
 int main(int argc, char **argv)
