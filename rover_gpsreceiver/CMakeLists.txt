@@ -26,7 +26,6 @@ find_package(rcl REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(GeographicLib REQUIRED)
 
 add_executable(nmea_parser src/nmea_parser.cpp)
 ament_target_dependencies(nmea_parser
@@ -35,7 +34,9 @@ ament_target_dependencies(nmea_parser
   std_msgs
   sensor_msgs
 )
-target_link_libraries(nmea_parser ${MINMEA_LIB} Geographic)
+target_link_libraries(nmea_parser 
+  ${MINMEA_LIB} 
+)
 
 add_executable(serial_nmea_publisher src/serial_nmea_publisher.cpp)
 ament_target_dependencies(serial_nmea_publisher
