@@ -15,7 +15,8 @@ find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(nlohmann_json REQUIRED)
-find_package(LibSerial REQUIRED)
+
+find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
 
 
 # Déclaration des exécutables
@@ -34,8 +35,8 @@ ament_target_dependencies(serial_publisher
   rclcpp geometry_msgs
 )
 
-target_include_directories(serial_publisher PRIVATE ${LIBSERIAL_INCLUDE_DIRS})
-target_link_libraries(serial_publisher ${LIBSERIAL_LIBRARIES})
+target_include_directories(serial_publisher PRIVATE /usr/include/libserial)
+target_link_libraries(serial_publisher ${LIBSERIAL_LIB})
 
 # Installation
 install(TARGETS
