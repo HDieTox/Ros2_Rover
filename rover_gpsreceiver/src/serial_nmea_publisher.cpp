@@ -15,12 +15,12 @@ public:
         nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 10);
 
         // Port série pour Ubuntu 24.04 sur CM5
-        std::string port = "/dev/ttyAMAO";  // Essayer aussi "/dev/ttyAMA0" ou "/dev/ttyUSB0" si nécessaire
+        std::string port = "/dev/ttyAMA0";  // Essayer aussi "/dev/ttyAMA0" ou "/dev/ttyUSB0" si nécessaire
 
         try
         {
             serial_port_.Open(port);
-            serial_port_.SetBaudRate(BaudRate::BAUD_38400);
+            serial_port_.SetBaudRate(BaudRate::BAUD_115200);
             serial_port_.SetCharacterSize(CharacterSize::CHAR_SIZE_8);
             serial_port_.SetFlowControl(FlowControl::FLOW_CONTROL_NONE);
             serial_port_.SetParity(Parity::PARITY_NONE);
