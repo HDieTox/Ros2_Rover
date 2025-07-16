@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
@@ -21,7 +22,7 @@ target_include_directories(main_controller PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 ament_target_dependencies(main_controller
-  rclcpp std_msgs geometry_msgs nav_msgs tf2 tf2_ros nlohmann_json)
+  rclcpp std_msgs geometry_msgs nav_msgs tf2 tf2_ros nlohmann_json sensor_msgs)
 
 add_executable(ppm_converter src/ppm_converter.cpp)
 target_include_directories(ppm_converter PUBLIC
