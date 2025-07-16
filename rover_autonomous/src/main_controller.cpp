@@ -90,7 +90,7 @@ private:
 
         if (dist < target.tolerance)
         {
-            // RCLCPP_INFO(get_logger(), "Waypoint %zu atteint (dist=%.2fm)", current_waypoint_, dist);
+            RCLCPP_INFO(get_logger(), "Waypoint %zu atteint (dist=%.2fm)", current_waypoint_, dist);
             current_waypoint_++;
             return;
         }
@@ -122,7 +122,7 @@ private:
         auto msg = geometry_msgs::msg::Twist();
         msg.linear.x = lin;
         msg.angular.z = ang;
-        RCLCPP_INFO(get_logger(), "Publishing navigation command: linear=%.2f m/s angular=%.2f rad/s", lin, ang);
+        // RCLCPP_INFO(get_logger(), "Publishing navigation command: linear=%.2f m/s angular=%.2f rad/s", lin, ang);
         cmd_pub_->publish(msg);
     }
 
