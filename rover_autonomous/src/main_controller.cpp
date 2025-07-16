@@ -90,7 +90,7 @@ private:
 
         if (dist < target.tolerance)
         {
-            RCLCPP_INFO(get_logger(), "Waypoint %zu atteint (dist=%.2fm)", current_waypoint_, dist);
+            // RCLCPP_INFO(get_logger(), "Waypoint %zu atteint (dist=%.2fm)", current_waypoint_, dist);
             current_waypoint_++;
             return;
         }

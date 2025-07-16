@@ -12,7 +12,7 @@ public:
     {
         // Remplace "/dev/ttyUSB0" par ton port série réel
         try {
-            serial_port_.Open("/dev/ttyUSB0");
+            serial_port_.Open("/dev/ttyAMA3");
             serial_port_.SetBaudRate(LibSerial::BaudRate::BAUD_115200);
             serial_port_.SetCharacterSize(LibSerial::CharacterSize::CHAR_SIZE_8);
             serial_port_.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
