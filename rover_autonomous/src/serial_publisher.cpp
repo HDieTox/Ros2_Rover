@@ -1,6 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
-#include <sensor_msgs/msg/imu.hpp>
+#include <sensor_msgs/msg/imu.h>
 #include <libserial/SerialPort.h>
 #include <iostream>
 #include <iomanip>
@@ -10,6 +10,8 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <cmath>
+#include <algorithm>
 
 class SerialCommandPublisher : public rclcpp::Node
 {
@@ -92,43 +94,41 @@ private:
         RCLCPP_INFO(get_logger(), "Thread de lecture série démarré");
         
         std::string buffer;
-        constexpr size_t BUFFER_SIZE = 256;
-        char read_buffer[BUFFER_SIZE];
         
         while (rclcpp::ok() && running_) {
             try {
-                // Read data from serial port
-                size_t bytes_read = 0;
                 {
                     std::lock_guard<std::mutex> lock(serial_mutex_);
-                    if (!serial_port_.IsOpen() || !serial_port_.IsDataAvailable()) {
+                    if (!serial_port_.IsOpen()) {
                         std::this_thread::sleep_for(std::chrono::milliseconds(10));
                         continue;
                     }
-                    
-                    bytes_read = serial_port_.Read(read_buffer, BUFFER_SIZE);
-                }
-                
-                if (bytes_read > 0) {
-                    // Append to buffer
-                    buffer.append(read_buffer, bytes_read);
-                    
-                    // Process complete lines
-                    size_t pos;
-                    while ((pos = buffer.find('\n')) != std::string::npos) {
-                        if (pos > 0) {
-                            std::string line = buffer.substr(0, pos);
-                            buffer.erase(0, pos + 1);
-                            
-                            // Process valid IMU lines
-                            if (line.find("IMU,") == 0) {
-                                process_imu_line(line);
-                            }
-                        } else {
-                            buffer.erase(0, 1); // Remove empty line
-                        }
+
+                    // Read available bytes
+                    while (serial_port_.IsDataAvailable()) {
+                        char next_byte;
+                        serial_port_.ReadByte(next_byte, std::chrono::milliseconds(5));
+                        buffer += next_byte;
                     }
                 }
+                
+                // Process complete lines
+                size_t pos;
+                while ((pos = buffer.find('\n')) != std::string::npos) {
+                    if (pos > 0) {
+                        std::string line = buffer.substr(0, pos);
+                        buffer.erase(0, pos + 1);
+                        
+                        // Process valid IMU lines
+                        if (line.find("IMU,") == 0) {
+                            process_imu_line(line);
+                        }
+                    } else {
+                        buffer.erase(0, 1); // Remove empty line
+                    }
+                }
+            } catch (const LibSerial::ReadTimeout&) {
+                // Timeout is normal, continue
             } catch (const std::exception& e) {
                 RCLCPP_ERROR(get_logger(), "Erreur lecture série: %s", e.what());
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
