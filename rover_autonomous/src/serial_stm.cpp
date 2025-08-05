@@ -182,7 +182,7 @@ private:
 
             // Publish IMU message
             imu_pub_->publish(imu_msg);
-            RCLCPP_INFO(get_logger(), "IMU publié: accel=(%.3f, %.3f, %.3f) gyro=(%.3f, %.3f, %.3f)",
+            //RCLCPP_INFO(get_logger(), "IMU publié: accel=(%.3f, %.3f, %.3f) gyro=(%.3f, %.3f, %.3f)",
                          imu_msg.linear_acceleration.x,
                          imu_msg.linear_acceleration.y,
                          imu_msg.linear_acceleration.z,
