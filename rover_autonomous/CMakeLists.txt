@@ -36,7 +36,7 @@ ament_target_dependencies(serial_publisher
 )
 
 target_include_directories(serial_publisher PRIVATE /usr/include/libserial)
-target_link_libraries(serial_publisher ${LIBSERIAL_LIB})
+target_link_libraries(serial_publisher ${LIBSERIAL_LIB} ${sensor_msgs_LIBRARIES})
 
 # Installation
 install(TARGETS
