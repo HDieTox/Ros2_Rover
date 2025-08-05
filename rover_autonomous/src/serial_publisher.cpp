@@ -92,16 +92,14 @@ private:
     void readSerialData()
     {
         if (!serial_port_.IsOpen()) {
-            RCLCPP_DEBUG(get_logger(), "get trolled");
             return;
         }
-        RCLCPP_DEBUG(get_logger(), "je try de read la serialdata");
 
         try
         {
             std::string data;
             while (serial_port_.IsDataAvailable()) {
-                RCLCPP_DEBUG(get_logger(), "Data Available");
+                RCLCPP_INFO(get_logger(), "Data Available");
                 char c;
                 serial_port_.ReadByte(c);  // Lecture non bloquante
                 data += c;
@@ -123,11 +121,11 @@ private:
 
                     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
 
-                    RCLCPP_DEBUG(get_logger(), "Ligne détectée: '%s'", line.c_str());
+                    RCLCPP_INFO(get_logger(), "Ligne détectée: '%s'", line.c_str());
 
                     if (!line.empty() && line.find("IMU,") == 0)
                     {
-                        RCLCPP_DEBUG(get_logger(), "Traitement ligne IMU");
+                        RCLCPP_INFO(get_logger(), "Traitement ligne IMU");
                         process_imu_line(line);
                     }
                 }
@@ -188,7 +186,7 @@ private:
 
             // Publish IMU message
             imu_pub_->publish(imu_msg);
-            RCLCPP_DEBUG(get_logger(), "IMU publié: accel=(%.3f, %.3f, %.3f) gyro=(%.3f, %.3f, %.3f)",
+            RCLCPP_INFO(get_logger(), "IMU publié: accel=(%.3f, %.3f, %.3f) gyro=(%.3f, %.3f, %.3f)",
                          imu_msg.linear_acceleration.x,
                          imu_msg.linear_acceleration.y,
                          imu_msg.linear_acceleration.z,
