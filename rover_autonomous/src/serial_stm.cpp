@@ -99,7 +99,6 @@ private:
         {
             std::string data;
             while (serial_port_.IsDataAvailable()) {
-                RCLCPP_INFO(get_logger(), "Data Available");
                 char c;
                 serial_port_.ReadByte(c);  // Lecture non bloquante
                 data += c;
@@ -121,11 +120,8 @@ private:
 
                     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
 
-                    RCLCPP_INFO(get_logger(), "Ligne détectée: '%s'", line.c_str());
-
                     if (!line.empty() && line.find("IMU,") == 0)
                     {
-                        RCLCPP_INFO(get_logger(), "Traitement ligne IMU");
                         process_imu_line(line);
                     }
                 }
