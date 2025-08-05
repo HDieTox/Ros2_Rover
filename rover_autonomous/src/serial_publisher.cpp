@@ -93,12 +93,13 @@ private:
         if (!serial_port_.IsOpen()) {
             return;
         }
+        RCLCPP_DEBUG(get_logger(), "je try de read la serialdata");
 
         try
         {
             std::string data;
             while (serial_port_.IsDataAvailable()) {
-                RCLCPP_DEBUG(get_logger(), "Data Avaible");
+                RCLCPP_DEBUG(get_logger(), "Data Available");
                 char c;
                 serial_port_.ReadByte(c);  // Lecture non bloquante
                 data += c;
