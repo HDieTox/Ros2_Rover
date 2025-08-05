@@ -8,8 +8,6 @@
 #include <vector>
 #include <string>
 #include <chrono>
-#include <thread>
-#include <mutex>
 
 class SerialCommandPublisher : public rclcpp::Node
 {
@@ -66,8 +64,6 @@ public:
 private:
     void cmd_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
     {
-        std::lock_guard<std::mutex> lock(serial_mutex_);
-
         if (!serial_port_.IsOpen())
         {
             RCLCPP_WARN(get_logger(), "Port série fermé, commande non envoyée");
@@ -91,8 +87,6 @@ private:
             RCLCPP_ERROR(get_logger(), "Erreur écriture série: %s", e.what());
         }
     }
-
-    std::string buffer_;
 
     void readSerialData()
     {
