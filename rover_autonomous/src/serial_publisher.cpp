@@ -118,21 +118,17 @@ private:
                         std::this_thread::sleep_for(std::chrono::milliseconds(10));
                         continue;
                     }
-
-                    // La méthode Read remplit la string passée en argument
-                    // avec les données lues et retourne le nombre d'octets lus
-                    bytes_read = serial_port_.Read(read_data, 0, MAX_READ_BYTES);
+                    serial_port_.Read(read_data, 0, MAX_READ_BYTES);
                 }
+                
+                size_t bytes_read = read_data.size()
 
                 if (bytes_read > 0)
                 {
-                    // read_data contient les données lues, mais attention à l'accumulation:
-                    // on peut ajouter au buffer général
                     buffer.append(read_data);
                     // vider read_data pour prochaine lecture
                     read_data.clear();
 
-                    // Le reste de ton traitement inchangé
                     size_t pos;
                     while ((pos = buffer.find('\n')) != std::string::npos)
                     {
