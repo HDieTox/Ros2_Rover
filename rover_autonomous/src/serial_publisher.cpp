@@ -121,7 +121,7 @@ private:
                     serial_port_.Read(read_data, 0, MAX_READ_BYTES);
                 }
                 
-                bytes_read = read_data.size()
+                bytes_read = read_data.size();
 
                 if (bytes_read > 0)
                 {
