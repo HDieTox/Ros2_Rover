@@ -205,9 +205,8 @@ private:
     }
 
     LibSerial::SerialPort serial_port_;
-    std::mutex serial_mutex_;
-    std::thread read_thread_;
-    bool running_ = true;
+    rclcpp::TimerBase::SharedPtr timer_;
+    std::string buffer_;
 
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_sub_;
     rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_pub_;
