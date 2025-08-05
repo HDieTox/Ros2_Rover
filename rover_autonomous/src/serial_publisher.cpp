@@ -137,6 +137,8 @@ private:
                     // Nettoyer les retours chariot
                     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
 
+                    RCLCPP_INFO(get_logger(), line);
+
                     if (!line.empty() && line.find("IMU,") == 0)
                     {
                         process_imu_line(line);
