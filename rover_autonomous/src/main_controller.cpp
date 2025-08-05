@@ -40,7 +40,7 @@ private:
     void gps_callback(const sensor_msgs::msg::NavSatFix::SharedPtr msg)
     {
         // Mise à jour position GPS et historique pour estimer cap
-        if (last_position_)
+        if (last_position_) 
         {
             prev_position_ = last_position_;
         }
