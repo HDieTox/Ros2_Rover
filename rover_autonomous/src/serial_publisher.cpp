@@ -40,6 +40,10 @@ public:
             return;
         }
 
+        timer_ = this->create_wall_timer(
+            std::chrono::milliseconds(10),  // Fréquence de lecture
+            std::bind(&SerialCommandPublisher::readSerialData, this));
+
         // Create subscription for command messages
         cmd_sub_ = create_subscription<geometry_msgs::msg::Twist>(
             "/navigation_cmd", 10,
@@ -48,20 +52,10 @@ public:
         // Create publisher for IMU data
         imu_pub_ = create_publisher<sensor_msgs::msg::Imu>("/imu_data", 10);
 
-        // Start serial reading thread
-        read_thread_ = std::thread(&SerialCommandPublisher::read_serial_thread, this);
     }
 
     ~SerialCommandPublisher()
     {
-        // Signal thread to stop
-        running_ = false;
-
-        if (read_thread_.joinable())
-        {
-            read_thread_.join();
-        }
-
         if (serial_port_.IsOpen())
         {
             serial_port_.Close();
@@ -102,37 +96,26 @@ private:
 
     void readSerialData()
     {
-        std::lock_guard<std::mutex> lock(serial_mutex_);
-
-        if (!serial_port_.IsOpen())
-        {
-            RCLCPP_WARN(get_logger(), "Port série fermé, pas de lecture");
+        if (!serial_port_.IsOpen()) {
             return;
         }
 
         try
         {
             std::string data;
-            while (serial_port_.IsDataAvailable())
-            {
-                RCLCPP_DEBUG(get_logger(), "j'ai une touche");
-
+            while (serial_port_.IsDataAvailable()) {
                 char c;
-                serial_port_.ReadByte(c);
+                serial_port_.ReadByte(c);  // Lecture non bloquante
                 data += c;
             }
 
             if (!data.empty())
             {
-                RCLCPP_DEBUG(get_logger(), "Données reçues (%zu octets): '%s'", data.size(), data.c_str());
-
                 buffer_ += data;
 
                 size_t pos = 0;
-                while ((pos = buffer_.find('\n')) != std::string::npos)
-                {
-                    if (pos == 0)
-                    {
+                while ((pos = buffer_.find('\n')) != std::string::npos) {
+                    if (pos == 0) {  // Ligne vide
                         buffer_.erase(0, 1);
                         continue;
                     }
@@ -149,10 +132,6 @@ private:
                         RCLCPP_DEBUG(get_logger(), "Traitement ligne IMU");
                         process_imu_line(line);
                     }
-                    else
-                    {
-                        RCLCPP_DEBUG(get_logger(), "Ligne ignorée");
-                    }
                 }
             }
         }
@@ -161,28 +140,14 @@ private:
             RCLCPP_ERROR(get_logger(), "Erreur lecture série: %s", e.what());
 
             // Tentative de réouverture
-            try
-            {
-                if (!serial_port_.IsOpen())
-                {
+            try {
+                if (!serial_port_.IsOpen()){
                     serial_port_.Open("/dev/ttyAMA3");
                 }
             }
-            catch (...)
-            {
+            catch (...) {
                 RCLCPP_ERROR(get_logger(), "Échec réouverture du port série");
             }
-        }
-    }
-
-    void read_serial_thread()
-    {
-        RCLCPP_INFO(get_logger(), "Thread de lecture série démarré");
-
-        while (rclcpp::ok() && running_)
-        {
-            readSerialData();
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
 
