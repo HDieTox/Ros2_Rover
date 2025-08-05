@@ -182,13 +182,17 @@ private:
 
             // Publish IMU message
             imu_pub_->publish(imu_msg);
-            //RCLCPP_INFO(get_logger(), "IMU publié: accel=(%.3f, %.3f, %.3f) gyro=(%.3f, %.3f, %.3f)",
+            /*
+            
+            RCLCPP_INFO(get_logger(), "IMU publié: accel=(%.3f, %.3f, %.3f) gyro=(%.3f, %.3f, %.3f)",
                          imu_msg.linear_acceleration.x,
                          imu_msg.linear_acceleration.y,
                          imu_msg.linear_acceleration.z,
                          imu_msg.angular_velocity.x,
                          imu_msg.angular_velocity.y,
                          imu_msg.angular_velocity.z);
+
+            */
         }
         catch (const std::exception &e)
         {
