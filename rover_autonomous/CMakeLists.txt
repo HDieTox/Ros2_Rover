@@ -32,11 +32,11 @@ add_executable(serial_publisher
   src/serial_publisher.cpp
 )
 ament_target_dependencies(serial_publisher 
-  rclcpp geometry_msgs
+  rclcpp geometry_msgs sensor_msgs
 )
 
 target_include_directories(serial_publisher PRIVATE /usr/include/libserial)
-target_link_libraries(serial_publisher ${LIBSERIAL_LIB} ${sensor_msgs_LIBRARIES})
+target_link_libraries(serial_publisher ${LIBSERIAL_LIB})
 
 # Installation
 install(TARGETS
