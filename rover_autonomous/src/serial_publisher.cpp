@@ -105,21 +105,25 @@ private:
         std::lock_guard<std::mutex> lock(serial_mutex_);
 
         if (!serial_port_.IsOpen())
+        {
+            RCLCPP_WARN(get_logger(), "Port série fermé, pas de lecture");
             return;
+        }
 
         try
         {
             std::string data;
-            // Lecture non bloquante octet par octet
             while (serial_port_.IsDataAvailable())
             {
                 char c;
-                serial_port_.ReadByte(c); // Lecture 1 octet, non bloquante puisqu’on teste IsDataAvailable()
+                serial_port_.ReadByte(c);
                 data += c;
             }
 
             if (!data.empty())
             {
+                RCLCPP_DEBUG(get_logger(), "Données reçues (%zu octets): '%s'", data.size(), data.c_str());
+
                 buffer_ += data;
 
                 size_t pos = 0;
@@ -134,14 +138,18 @@ private:
                     std::string line = buffer_.substr(0, pos);
                     buffer_.erase(0, pos + 1);
 
-                    // Nettoyer les retours chariot
                     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
 
-                    RCLCPP_INFO(get_logger(), line);
+                    RCLCPP_DEBUG(get_logger(), "Ligne détectée: '%s'", line.c_str());
 
                     if (!line.empty() && line.find("IMU,") == 0)
                     {
+                        RCLCPP_DEBUG(get_logger(), "Traitement ligne IMU");
                         process_imu_line(line);
+                    }
+                    else
+                    {
+                        RCLCPP_DEBUG(get_logger(), "Ligne ignorée");
                     }
                 }
             }
