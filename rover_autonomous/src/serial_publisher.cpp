@@ -115,6 +115,8 @@ private:
             std::string data;
             while (serial_port_.IsDataAvailable())
             {
+                RCLCPP_DEBUG(get_logger(), "j'ai une touche");
+
                 char c;
                 serial_port_.ReadByte(c);
                 data += c;
