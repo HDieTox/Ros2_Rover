@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>rover_autonomous</name>
   <version>1.0.0</version>
@@ -8,11 +7,11 @@
   <license>Apache 2.0</license>
 
   <depend>rclcpp</depend>
-  <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
   <depend>nlohmann_json</depend>
   <depend>gps_msgs</depend>
   <depend>sensor_msgs</depend>

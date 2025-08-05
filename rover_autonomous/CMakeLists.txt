@@ -8,40 +8,35 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 find_library(LIBSERIAL_LIB serial PATHS /usr/lib /usr/lib/aarch64-linux-gnu)
 
 
 # Déclaration des exécutables
-add_executable(main_controller src/main_controller.cpp src/mission_parser.cpp)
-target_include_directories(main_controller PUBLIC
-$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-$<INSTALL_INTERFACE:include>)
-ament_target_dependencies(main_controller 
-  rclcpp std_msgs geometry_msgs nav_msgs tf2 tf2_ros nlohmann_json sensor_msgs
+add_executable(nav_controller src/nav_controller.cpp)
+ament_target_dependencies(nav_controller 
+  rclcpp geometry_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs nlohmann_json sensor_msgs
 )
 
-add_executable(serial_publisher 
-  src/serial_publisher.cpp
-)
-ament_target_dependencies(serial_publisher 
+add_executable(serial_stm src/serial_stm.cpp)
+ament_target_dependencies(serial_stm 
   rclcpp geometry_msgs sensor_msgs
 )
 
-target_include_directories(serial_publisher PRIVATE /usr/include/libserial)
-target_link_libraries(serial_publisher ${LIBSERIAL_LIB})
+target_include_directories(serial_stm PRIVATE /usr/include/libserial)
+target_link_libraries(serial_stm ${LIBSERIAL_LIB})
 
 # Installation
 install(TARGETS
-  main_controller
-  serial_publisher
+  nav_controller
+  serial_stm
   DESTINATION lib/${PROJECT_NAME}
 )
 
