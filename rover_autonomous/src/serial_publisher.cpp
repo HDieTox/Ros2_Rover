@@ -98,62 +98,79 @@ private:
         }
     }
 
+    std::string buffer_;
+
+    void readSerialData()
+    {
+        std::lock_guard<std::mutex> lock(serial_mutex_);
+
+        if (!serial_port_.IsOpen())
+            return;
+
+        try
+        {
+            std::string data;
+            // Lecture non bloquante octet par octet
+            while (serial_port_.IsDataAvailable())
+            {
+                char c;
+                serial_port_.ReadByte(c); // Lecture 1 octet, non bloquante puisqu’on teste IsDataAvailable()
+                data += c;
+            }
+
+            if (!data.empty())
+            {
+                buffer_ += data;
+
+                size_t pos = 0;
+                while ((pos = buffer_.find('\n')) != std::string::npos)
+                {
+                    if (pos == 0)
+                    {
+                        buffer_.erase(0, 1);
+                        continue;
+                    }
+
+                    std::string line = buffer_.substr(0, pos);
+                    buffer_.erase(0, pos + 1);
+
+                    // Nettoyer les retours chariot
+                    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+
+                    if (!line.empty() && line.find("IMU,") == 0)
+                    {
+                        process_imu_line(line);
+                    }
+                }
+            }
+        }
+        catch (const std::exception &e)
+        {
+            RCLCPP_ERROR(get_logger(), "Erreur lecture série: %s", e.what());
+
+            // Tentative de réouverture
+            try
+            {
+                if (!serial_port_.IsOpen())
+                {
+                    serial_port_.Open("/dev/ttyAMA3");
+                }
+            }
+            catch (...)
+            {
+                RCLCPP_ERROR(get_logger(), "Échec réouverture du port série");
+            }
+        }
+    }
+
     void read_serial_thread()
     {
         RCLCPP_INFO(get_logger(), "Thread de lecture série démarré");
 
-        std::string buffer;
-        std::string read_data;
-        constexpr size_t MAX_READ_BYTES = 256;
-
         while (rclcpp::ok() && running_)
         {
-            try
-            {
-                size_t bytes_read = 0;
-                {
-                    std::lock_guard<std::mutex> lock(serial_mutex_);
-                    if (!serial_port_.IsOpen() || !serial_port_.IsDataAvailable())
-                    {
-                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                        continue;
-                    }
-                    serial_port_.Read(read_data, 0, MAX_READ_BYTES);
-                }
-                
-                bytes_read = read_data.size();
-
-                if (bytes_read > 0)
-                {
-                    buffer.append(read_data);
-                    // vider read_data pour prochaine lecture
-                    read_data.clear();
-
-                    size_t pos;
-                    while ((pos = buffer.find('\n')) != std::string::npos)
-                    {
-                        if (pos > 0)
-                        {
-                            std::string line = buffer.substr(0, pos);
-                            buffer.erase(0, pos + 1);
-
-                            if (line.find("IMU,") == 0)
-                            {
-                                process_imu_line(line);
-                            }
-                        }
-                        else
-                        {
-                            buffer.erase(0, 1);
-                        }
-                    }
-                }
-            }
-            catch (const std::exception &e)
-            {
-                RCLCPP_ERROR(get_logger(), "Erreur lecture série: %s", e.what());
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
+            readSerialData();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
 
