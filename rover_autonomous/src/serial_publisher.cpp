@@ -38,6 +38,7 @@ public:
             return;
         }
 
+        // Timer de lecture
         timer_ = this->create_wall_timer(
             std::chrono::milliseconds(10),  // Fréquence de lecture
             std::bind(&SerialCommandPublisher::readSerialData, this));
@@ -91,6 +92,7 @@ private:
     void readSerialData()
     {
         if (!serial_port_.IsOpen()) {
+            RCLCPP_DEBUG(get_logger(), "get trolled");
             return;
         }
         RCLCPP_DEBUG(get_logger(), "je try de read la serialdata");

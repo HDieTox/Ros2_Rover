@@ -9,8 +9,7 @@ using namespace LibSerial;
 class NmeaPublisherNode : public rclcpp::Node
 {
 public:
-    NmeaPublisherNode()
-        : Node("nmea_publisher_node")
+    NmeaPublisherNode() : Node("nmea_publisher_node")
     {
         nmea_pub_ = this->create_publisher<std_msgs::msg::String>("/nmea", 10);
 
