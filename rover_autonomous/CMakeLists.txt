@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_autonomous)
 
-# Configuration standard ROS2
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
+set(CMAKE_CXX_STANDARD 14)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
