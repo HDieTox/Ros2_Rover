@@ -40,7 +40,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         mission_file_arg,
-        navigation_node,
-        serial_stm_node,
         ekf_node,
+        serial_stm_node,
+        navigation_node,
     ])
