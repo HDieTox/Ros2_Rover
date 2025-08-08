@@ -89,7 +89,7 @@ private:
                         auto msg = std_msgs::msg::String();
                         msg.data = line;
                         nmea_pub_->publish(msg);
-                        RCLCPP_INFO(this->get_logger(), "NMEA publié: %s", line.c_str());
+                        RCLCPP_DEBUG(this->get_logger(), "NMEA publié: %s", line.c_str());
                     }
                 }
             }

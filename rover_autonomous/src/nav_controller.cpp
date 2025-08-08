@@ -148,6 +148,7 @@ private:
         msg.linear.x = lin;
         msg.angular.z = ang;
         cmd_pub_->publish(msg);
+        RCLCPP_INFO(get_logger(), "/navigation_cmd : %s", msg);
     }
 
     double normalize_angle(double angle)
