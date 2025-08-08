@@ -27,9 +27,9 @@ ekf_filter_node:
     imu0_queue_size: 10
 
     # Process noise covariance params, ajuster en fonction de votre IMU/GPS
-    process_noise_covariance: [0.05, 0, 0, 0, 0, 0,
-                               0, 0.05, 0, 0, 0, 0,
-                               0, 0, 0.05, 0, 0, 0,
-                               0, 0, 0, 0.1, 0, 0,
-                               0, 0, 0, 0, 0.1, 0,
-                               0, 0, 0, 0, 0, 0.1]
+    process_noise_covariance: [0.05, 0.0, 0.0, 0.0, 0.0, 0.0,
+                               0.0, 0.05, 0.0, 0.0, 0.0, 0.0,
+                               0.0, 0.0, 0.05, 0.0, 0.0, 0.0,
+                               0.0, 0.0, 0.0, 0.1, 0.0, 0.0,
+                               0.0, 0.0, 0.0, 0.0, 0.1, 0.0,
+                               0.0, 0.0, 0.0, 0.0, 0.0, 0.1]
