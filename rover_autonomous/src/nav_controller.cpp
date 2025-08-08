@@ -98,6 +98,7 @@ private:
     void control_loop()
     {
         if (!latest_odom_ || mission_points_.empty())
+            RCLCPP_ERROR(get_logger(), "latest_odom_ = NULL");
             return;
 
         if (current_waypoint_ >= mission_points_.size())
