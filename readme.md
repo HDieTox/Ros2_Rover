@@ -21,54 +21,61 @@
 ## Project Structure and Architecture  📂
 
 ```mermaid
----
-config:
-  layout: dagre
-  theme: default
-  look: neo
----
 flowchart BT
- subgraph subGraph0["Power Supply"]
-        Battery12V["12V Battery"]
-        TrexJr["Polulu Trex Jr (driver)"]
-        STM32Power["STM32 B-L475E"]
-        ReceiverRC["RC Receiver"]
-        PowerBank5V["PowerBank 5V 5A"]
-        CM5_IOBoard["CM5 IO Board"]
-        C099F9PPower["C099 F9P C01 (GPS)"]
+  subgraph subGraph0["Power Supply"]
+    Battery12V["12V Battery"]
+    TrexJr["Polulu Trex Jr (driver)"]
+    STM32Power["STM32 B-L475E"]
+    ReceiverRC["RC Receiver"]
+    PowerBank5V["PowerBank 5V 5A"]
+    CM5_IOBoard["CM5 IO Board"]
+    C099F9PPower["C099 F9P C01 (GPS)"]
   end
- subgraph subGraph1["Communications and Control"]
-        RemoteControl["Turnigy Remote Control"]
-        STM32Comm["STM32 B-L475E"]
-        CM5["Raspberry Pi CM5"]
-        C099F9PComm["C099 F9P C01"]
-        TrexJrComm["Polulu Trex Jr (driver)"]
-        Motors["DC Motors"]
+
+  Battery12V -- 12V --> TrexJr
+  TrexJr -- 5V --> STM32Power
+  STM32Power -- 5V --> ReceiverRC
+  PowerBank5V -- 5V 5A --> CM5_IOBoard
+  CM5_IOBoard -- USB 5V --> C099F9PPower
+
+  style subGraph0 fill:#FFCDD2,stroke:#000000
+```
+
+```mermaid
+flowchart BT
+  subgraph subGraph1["Communications and Control"]
+    RemoteControl["Turnigy Remote Control"]
+    STM32Comm["STM32 B-L475E"]
+    CM5["Raspberry Pi CM5"]
+    C099F9PComm["C099 F9P C01"]
+    TrexJrComm["Polulu Trex Jr (driver)"]
+    Motors["DC Motors"]
   end
- subgraph subGraph2["ROS2 Packages in CM5"]
-        GPSReceiver["rover_gpsreceiver"]
-        Navigation["rover_navigation"]
-        Localization["robot_localization (EKF)"]
-  end
-    Battery12V -- 12V --> TrexJr
-    TrexJr -- 5V --> STM32Power
-    STM32Power -- 5V --> ReceiverRC
-    PowerBank5V -- 5V 5A --> CM5_IOBoard
-    CM5_IOBoard -- USB 5V --> C099F9PPower
-    RemoteControl -- PWM control, switch --> STM32Comm
-    C099F9PComm -- NMEA UART --> CM5
-    STM32Comm -- IMU UART --> CM5
-    CM5 -- Movement commands UART --> STM32Comm
-    STM32Comm -- PWM --> TrexJrComm
-    TrexJrComm -- Motor control --> Motors
-    GPSReceiver -- Position data --> Navigation
-    Navigation -- Navigation data --> Localization
-    Localization -- EKF correction --> Navigation
-    style subGraph2 fill:#C8E6C9,stroke:#000000
-    style subGraph1 fill:#BBDEFB,stroke:#000000
-    style subGraph0 fill:#FFCDD2,stroke:#000000
+
+  RemoteControl -- PWM control, switch --> STM32Comm
+  C099F9PComm -- NMEA UART --> CM5
+  STM32Comm -- IMU UART --> CM5
+  CM5 -- Movement commands UART --> STM32Comm
+  STM32Comm -- PWM --> TrexJrComm
+  TrexJrComm -- Motor control --> Motors
+
+  style subGraph1 fill:#BBDEFB,stroke:#000000
 
 ```
+flowchart BT
+  subgraph subGraph2["ROS2 Packages in CM5"]
+    GPSReceiver["rover_gpsreceiver"]
+    Navigation["rover_navigation"]
+    Localization["robot_localization (EKF)"]
+  end
+
+  GPSReceiver -- Position data --> Navigation
+  Navigation -- Navigation data --> Localization
+  Localization -- EKF correction --> Navigation
+
+  style subGraph2 fill:#C8E6C9,stroke:#000000
+
+
 
 ```
 Ros2_Rover/
