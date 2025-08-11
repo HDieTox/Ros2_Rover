@@ -24,8 +24,11 @@
 ---
 config:
   theme: default
-  layout: dagre
-  look: neo
+  themeVariables:
+    background: '#F6F8FA'  # Gris très clair, proche du fond GitHub clair
+    primaryColor: '#000000' # Ajuster les couleurs des éléments si besoin
+    secondaryColor: '#555555'
+    tertiaryColor: '#777777'
 ---
 flowchart BT
   subgraph subGraph0["Power Supply"]
@@ -55,7 +58,7 @@ config:
   look: neo
 ---
 flowchart BT
-  subgraph subGraph1["Communications and Control"]
+  subgraph subGraph1["Communications & Control"]
     RemoteControl["Turnigy Remote Control"]
     STM32Comm["STM32 B-L475E"]
     CM5["Raspberry Pi CM5"]
