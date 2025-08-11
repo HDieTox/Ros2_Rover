@@ -15,7 +15,7 @@
 - **ROS2 JAZZY** (Ubuntu 24.04 recommended)
 
 ## Project Structure 📂
-
+```
 Ros2_Rover/
 ├── new_board_rover/         # STM32 Cube IDE project for the STM32 board
 │
@@ -50,6 +50,7 @@ Ros2_Rover/
 │   └── package.xml
 │
 └── SQUARE.plan             # Waypoints map created with QGroundControl
+```
 
 ## Installation & Setup 🛠️
 
@@ -69,5 +70,5 @@ Ros2_Rover/
 
 in 2 different terminals : 
 
-    - `ros2 launch rover_gpasreceiver gps.launch.py`
-    - `ros2 launch rover_autonomous navigation.launch.py mission_file:=./src/SQUARE.plan`
+- `ros2 launch rover_gpasreceiver gps.launch.py`
+- `ros2 launch rover_autonomous navigation.launch.py mission_file:=./src/SQUARE.plan`
