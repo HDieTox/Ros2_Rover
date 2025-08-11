@@ -20,60 +20,54 @@
 
 ## Project Structure and Architecture  📂
 
-```plantuml
-@startuml
-skinparam packageStyle rectangle
-skinparam monochrome false
+```mermaid
+---
+config:
+  layout: dagre
+  theme: default
+  look: neo
+---
+flowchart BT
+ subgraph subGraph0["Power Supply"]
+        Battery12V["12V Battery"]
+        TrexJr["Polulu Trex Jr (driver)"]
+        STM32Power["STM32 B-L475E"]
+        ReceiverRC["RC Receiver"]
+        PowerBank5V["PowerBank 5V 5A"]
+        CM5_IOBoard["CM5 IO Board"]
+        C099F9PPower["C099 F9P C01 (GPS)"]
+  end
+ subgraph subGraph1["Communications and Control"]
+        RemoteControl["Turnigy Remote Control"]
+        STM32Comm["STM32 B-L475E"]
+        CM5["Raspberry Pi CM5"]
+        C099F9PComm["C099 F9P C01"]
+        TrexJrComm["Polulu Trex Jr (driver)"]
+        Motors["DC Motors"]
+  end
+ subgraph subGraph2["ROS2 Packages in CM5"]
+        GPSReceiver["rover_gpsreceiver"]
+        Navigation["rover_navigation"]
+        Localization["robot_localization (EKF)"]
+  end
+    Battery12V -- 12V --> TrexJr
+    TrexJr -- 5V --> STM32Power
+    STM32Power -- 5V --> ReceiverRC
+    PowerBank5V -- 5V 5A --> CM5_IOBoard
+    CM5_IOBoard -- USB 5V --> C099F9PPower
+    RemoteControl -- PWM control, switch --> STM32Comm
+    C099F9PComm -- NMEA UART --> CM5
+    STM32Comm -- IMU UART --> CM5
+    CM5 -- Movement commands UART --> STM32Comm
+    STM32Comm -- PWM --> TrexJrComm
+    TrexJrComm -- Motor control --> Motors
+    GPSReceiver -- Position data --> Navigation
+    Navigation -- Navigation data --> Localization
+    Localization -- EKF correction --> Navigation
+    style subGraph2 fill:#C8E6C9,stroke:#000000
+    style subGraph1 fill:#BBDEFB,stroke:#000000
+    style subGraph0 fill:#FFCDD2,stroke:#000000
 
-title ROS2 Rover Project Structure
-
-' Define packages for clarity
-package "Power Supply" #FFE4B2 {
-  
-  [12V Battery] as Battery12V
-  [Polulu Trex Jr (driver)] as TrexJr
-  [STM32 B-L475E] as STM32Power
-  [RC Receiver] as ReceiverRC
-  [PowerBank 5V 5A] as PowerBank5V
-  [CM5 IO Board] as CM5_IOBoard
-  [C099 F9P C01 (GPS)] as C099F9PPower
-  
-  Battery12V --> TrexJr : 12V
-  TrexJr --> STM32Power : 5V
-  STM32Power --> ReceiverRC : 5V
-  PowerBank5V --> CM5_IOBoard : 5V 5A
-  CM5_IOBoard --> C099F9PPower : USB 5V
-}
-
-package "Communications and Control" #ADD8E6 {
-  
-  [Turnigy Remote Control] as RemoteControl
-  [STM32 B-L475E] as STM32Comm
-  [Raspberry Pi CM5] as CM5
-  [C099 F9P C01] as C099F9PComm
-  [Polulu Trex Jr (driver)] as TrexJrComm
-  [DC Motors] as Motors
-  
-  RemoteControl --> STM32Comm : PWM control, switch
-  C099F9PComm --> CM5 : NMEA UART
-  STM32Comm --> CM5 : IMU UART (Accel + Gyro)
-  CM5 --> STM32Comm : Movement commands UART
-  STM32Comm --> TrexJrComm : PWM
-  TrexJrComm --> Motors : Motor control
-}
-
-package "ROS2 Packages in CM5" #D3D3D3 {
-  
-  [rover_gpsreceiver] as GPSReceiver
-  [rover_navigation] as Navigation
-  [robot_localization (EKF)] as Localization
-
-  GPSReceiver --> Navigation : Position data
-  Navigation --> Localization : Navigation data
-  Localization --> Navigation : EKF correction
-}
-
-@enduml
 ```
 
 ```
