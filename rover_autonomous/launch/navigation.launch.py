@@ -36,10 +36,27 @@ def generate_launch_description():
         output='screen',
         parameters=[ekf_param_file]
     )
+    # Ajoutez ceci dans generate_launch_description()
+    static_tf_gps = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0.0', '0.0', '0.1', '0', '0', '0', 'base_link', 'gps'],
+        name='tf_base_to_gps'
+    )
+
+    static_tf_imu = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0.05', '0', '0.0', '0', '0', '0', 'base_link', 'imu'],
+        name='tf_base_to_imu'
+    )
+
 
 
     return LaunchDescription([
         mission_file_arg,
+        static_tf_gps,
+        static_tf_imu,
         ekf_node,
         serial_stm_node,
         navigation_node,

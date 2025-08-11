@@ -167,7 +167,7 @@ private:
             // Parse IMU data
             sensor_msgs::msg::Imu imu_msg;
             imu_msg.header.stamp = this->now();
-            imu_msg.header.frame_id = "imu_link";
+            imu_msg.header.frame_id = "imu";
 
             // Convert acceleration (g to m/s²)
             imu_msg.linear_acceleration.x = std::stof(parts[2]) * 9.80665;

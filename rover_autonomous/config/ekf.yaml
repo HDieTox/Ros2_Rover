@@ -17,7 +17,7 @@ ekf_filter_node:
                      false, false, false]  # Vitesse angulaire
     navsat0_delay: 0.0
     navsat0_gps_use: true
-    datum: [49.230, 17.657, 0.0]  # Point de référence (utilisez votre premier point de mission)
+    datum: [49.230, 17.658, 0.0]  # Point de référence (utilisez votre premier point de mission)
     navsat0_queue_size: 10
 
     # Configuration IMU
