@@ -17,7 +17,7 @@ def generate_launch_description():
     ekf_param_file = os.path.join(pkg_share, 'config', 'ekf.yaml')
 
     navigation_node = Node(
-        package='rover_autonomous',          # à remplacer par le nom de votre package
+        package='rover_autonomous',
         executable='nav_controller',
         name='nav_controller',
         parameters=[{'mission_file': LaunchConfiguration('mission_file')}]

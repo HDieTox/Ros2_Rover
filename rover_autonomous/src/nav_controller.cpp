@@ -93,12 +93,25 @@ private:
     void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
     {
         latest_odom_ = *msg;
+        RCLCPP_INFO(get_logger(), "Odométrie reçue");
     }
 
     void control_loop()
     {
-        if (!latest_odom_ || mission_points_.empty()){
-            RCLCPP_ERROR(get_logger(), "latest_odom_ = NULL");
+        if (!latest_odom_)
+        {
+            RCLCPP_WARN_THROTTLE(
+                get_logger(),
+                *get_clock(),
+                1000, // Log toutes les secondes
+                "En attente d'odométrie...");
+            return;
+        }
+        if (mission_points_.empty())
+        {
+            RCLCPP_ERROR(
+                get_logger(),
+                "Mission vide! Vérifiez le fichier de mission.");
             return;
         }
         if (current_waypoint_ >= mission_points_.size())
@@ -149,7 +162,7 @@ private:
         msg.linear.x = lin;
         msg.angular.z = ang;
         cmd_pub_->publish(msg);
-        RCLCPP_INFO(get_logger(), "/navigation_cmd : linear=(%.2f), angular=(%.2f)",msg.linear.x,msg.angular.z = ang);
+        RCLCPP_INFO(get_logger(), "/navigation_cmd : linear=(%.2f), angular=(%.2f)", msg.linear.x, msg.angular.z = ang);
     }
 
     double normalize_angle(double angle)

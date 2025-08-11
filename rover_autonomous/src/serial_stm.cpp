@@ -71,7 +71,7 @@ private:
             return;
         }
 
-        // Format: L:<linear> A:<angular> avec 3 décimales, suivi d'un \n
+        // Format: L:<linear> A:<angular> with 3 decimal places, followed by a \n
         std::ostringstream ss;
         ss << "L:" << std::fixed << std::setprecision(3) << msg->linear.x
            << " A:" << std::fixed << std::setprecision(3) << msg->angular.z << "\n";

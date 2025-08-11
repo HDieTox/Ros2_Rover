@@ -62,7 +62,7 @@ uint8_t rx_buffer[64];
 volatile uint8_t rx_index = 0;
 uint8_t message_received = 0;
 
-// ============= Variable du mode Manuel =============
+// ============= Manual Mode Variables =============
 volatile uint32_t IC1_Value1 = 0;
 volatile uint32_t IC1_Value2 = 0;
 volatile uint8_t IC1_Captured = 0;
@@ -77,9 +77,9 @@ volatile uint32_t IC3_Value1 = 0;
 volatile uint32_t IC3_Value2 = 0;
 volatile uint8_t IC3_Captured = 0;
 volatile uint32_t pulse_width_SWITCH;
-volatile uint8_t switch_state = 0; // 0 = RC / 1 = Autonomous // 0 Par defaut !!
+volatile uint8_t switch_state = 0; // 0 = RC / 1 = Automatic // 0 by default !!
 
-// ============= Variable des Capteurs =============
+// ============= Sensors Variables =============
 
 extern I2C_HandleTypeDef hi2c2;
 
@@ -154,16 +154,16 @@ int main(void)
 
 	IMU_Init();
 
-	// ============= Ecoute du mode Manuel =============
+	// ============= RC receiver =============
 	HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1); // LIN
 	HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2); // ANG
 	HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_4); // Switch (TIM1_CH1)
 
-	// ============= Envoie des PWM =============
+	// ============= PWM Creation =============
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); // Moteur Droit (TIM3_CH2)
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2); // Moteur Gauche (TIM3_CH3)
 
-	// Initialisation PWM neutre
+	// PWM neutral initialisation
 	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1500); // 1.5ms
 	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 1500); // 1.5ms
 
@@ -206,7 +206,7 @@ int main(void)
 				printf("Control Mode :: Automatic\n\r");
 			}
 		}
-		if (switch_state == 0) { // Mode Télécommande
+		if (switch_state == 0) { // Manual Mode
 			int16_t pwm_left = 1500 + (int) ((lin - ang) * 500);
 			int16_t pwm_right = 1500 + (int) ((lin + ang) * 500);
 			Update_Motors(pwm_left, pwm_right);
@@ -677,11 +677,11 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-// ============= Callback d'interruption PWM =============
+// ============= PWM Interruption CallBack =============
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	uint32_t diff;
 
-	// TIM2 - Commandes RC (Linéaire et Angulaire)
+	// TIM2 - RC control (Linear and Angular)
 	if (htim->Instance == TIM3) {
 		switch (htim->Channel) {
 		case HAL_TIM_ACTIVE_CHANNEL_1: // LIN
@@ -735,7 +735,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 						TIM_INPUTCHANNELPOLARITY_RISING);
 			}
 			break;
-		case HAL_TIM_ACTIVE_CHANNEL_4: // ANG
+		case HAL_TIM_ACTIVE_CHANNEL_4: // SWITCH
 			if (IC3_Captured == 0) {
 				IC3_Value1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_4);
 				IC3_Captured = 1;
@@ -761,19 +761,19 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	}
 }
 
-// Fonction de contrôle moteur
+// Motor Control Function
 void Update_Motors(int16_t pwm_left, int16_t pwm_right) {
-	// Clamping des valeurs
+	// Clamping 
 	pwm_left = (pwm_left < 1000) ? 1000 : (pwm_left > 2000) ? 2000 : pwm_left;
 	pwm_right = (pwm_right < 1000) ? 1000 :
 				(pwm_right > 2000) ? 2000 : pwm_right;
 
-	// Commande Moteurs
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, pwm_left); // Moteur Gauche (TIM3_CH3)
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, pwm_right); // Moteur Droit (TIM3_CH2)
+	// Motor Command
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, pwm_left); // Left  (TIM3_CH3)
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, pwm_right); // Right (TIM3_CH2)
 }
 
-// ============= Gestion UART =============
+// ============= UART =============
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	static char buffer[128];
 	static uint8_t idx = 0;
@@ -786,7 +786,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		buffer[idx++] = rx_buffer[0];
 	}
 
-	// Relance la réception sur le premier octet
+	// CallBack
 	HAL_UART_Receive_IT(huart, &rx_buffer[0], 1);
 }
 
@@ -795,7 +795,7 @@ void processCompleteMessage(char *msg) {
 	if (sscanf(msg, "L:%f A:%f", &lin_val, &ang_val) == 2) {
 		printf("Message valide: %s\n\r", msg);
 
-		// Calcul des PWM
+		// PWM calculation
 		int16_t pwm_left = 1500 + (int) ((lin_val - ang_val) * 500);
 		int16_t pwm_right = 1500 + (int) ((lin_val + ang_val) * 500);
 
@@ -806,14 +806,14 @@ void processCompleteMessage(char *msg) {
 bool CheckSwitchMode(float pulse_width_SWITCH) {
 	static uint32_t last_switch_time = 0;
 	if (HAL_GetTick() - last_switch_time < 200)
-		return false; // Anti-rebond 200ms
+		return false; // Anti-bounce 200ms
 
 	if ((switch_state == 1) && (pulse_width_SWITCH < 1800)) {
-		// Retour en mode Manuel
+		// Return to Manual mode
 		HAL_UART_AbortReceive(&huart3);
 		HAL_NVIC_DisableIRQ(USART3_IRQn);
 
-		// Réactivation des captures RC
+		// Reactivation of RC captures
 		HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
 		HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
 
@@ -821,7 +821,7 @@ bool CheckSwitchMode(float pulse_width_SWITCH) {
 		last_switch_time = HAL_GetTick();
 		return true;
 	} else if ((switch_state == 0) && (pulse_width_SWITCH > 1800)) {
-		// Passage en mode Automatique
+		// Switching to Automatic mode
 		HAL_TIM_IC_Stop_IT(&htim3, TIM_CHANNEL_1);
 		HAL_TIM_IC_Stop_IT(&htim3, TIM_CHANNEL_2);
 
@@ -846,9 +846,9 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	HAL_UART_Receive_IT(huart, &rx_buffer[0], 1);
 }
 
-// ============= Gestion Capteurs =============
+// ============= Sensor Management =============
 
-#define LSM6DSL_I2C_ADDRESS (0x6A << 1) // 0xD4 en 8 bits adresse pour HAL!
+#define LSM6DSL_I2C_ADDRESS (0x6A << 1) // 0xD4 in 8 bits address for HAL!
 
 
 static int32_t platform_write(void *handle, uint8_t Reg, uint8_t *Bufp,
@@ -896,21 +896,21 @@ bool IMU_Read(float *accel_data, float *gyro_data) {
 
     int16_t raw_accel[3], raw_gyro[3];
 
-    // Lecture accéléromètre
+    // Accelerometer reading
     int32_t ret_accel = lsm6dsl_acceleration_raw_get(&imu_ctx, raw_accel);
     if (ret_accel != 0) {
         printf("Erreur lecture accel: %ld\n\r", ret_accel);
         return false;
     }
 
-    // Lecture gyroscope
+    // Gyroscope reading
     int32_t ret_gyro = lsm6dsl_angular_rate_raw_get(&imu_ctx, raw_gyro);
     if (ret_gyro != 0) {
         printf("Erreur lecture gyro: %ld\n\r", ret_gyro);
         return false;
     }
 
-    // Conversion en g (acc) et dps (gyro)
+    // Conversion to g (acc) and dps (gyro)
     accel_data[0] = raw_accel[0] * 0.061f / 1000.0f;
     accel_data[1] = raw_accel[1] * 0.061f / 1000.0f;
     accel_data[2] = raw_accel[2] * 0.061f / 1000.0f;

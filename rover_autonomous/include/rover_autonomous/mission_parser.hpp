@@ -8,7 +8,7 @@ struct MissionPoint {
     double latitude;
     double longitude;
     double altitude;
-    double tolerance;  // Tolérance en mètres
+    double tolerance;  // Tolerance in metres
 };
 
 class MissionParser {

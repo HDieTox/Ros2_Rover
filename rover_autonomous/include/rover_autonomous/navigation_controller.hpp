@@ -12,12 +12,12 @@ public:
     NavigationController();
 
 private:
-    // Callbacks et fonctions internes
+    // Callbacks and internal functions
     void gps_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
     void execute_mission();
     void publish_navigation_command(double linear, double angular);
     
-    // Variables membres
+    // Variables 
     std::vector<MissionPoint> mission_points_;
     size_t current_waypoint_index_ = 0;
     rclcpp::Time last_update_time_;

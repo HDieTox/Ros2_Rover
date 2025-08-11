@@ -74,10 +74,10 @@ Ros2_Rover/
     ```
 ## Usage 🧭
 
-in 2 different terminals : 
+in 2 different terminals in rover_ws/ : 
 
-- `ros2 launch rover_gpasreceiver gps.launch.py`
-- `ros2 launch rover_autonomous navigation.launch.py mission_file:=./src/SQUARE.plan`
+- `. install/setup.bash && ros2 launch rover_gpsreceiver gps.launch.py`
+- `. install/setup.bash && ros2 launch rover_autonomous navigation.launch.py mission_file:=./src/SQUARE.plan`
 
 ## Graphical Recap
 
