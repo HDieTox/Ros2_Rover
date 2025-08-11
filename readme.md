@@ -20,7 +20,60 @@
 
 ## Project Structure and Architecture  📂
 
-![](https://www.plantuml.com/plantuml/svg/XLHVJzim77ptfpYnXnLjI53eDdYOw9yMmIX4JM4FquICQuf7ObU_EB1isdUVxU1YsBIfB_RTsRdpsJsiB2TRbmMhxfHUSU8bLbpSyQNCRLD8a1IMwsKX4q5fj16tP4g96rvKaZ6hhDFEplCkPkPU4Z8otznAv9PgOMjocjSOoHkbPTo_meqXY8AJiWrx1B6HcGT9oElLgcWsy6eo6UyDklZ900PysUbUOi2jbTHy1Q_YsC6UpKnH5pNc9B_ZXD1Pa79cDeFIWoVaLVbykjl5OEjqxtrl7BY0-0y7VZR4J0hfbmOsJcP3pmRPWEixz2xHwmV56ki56yDf3yVd61XEYy0xuEhuFCm3lxs_Zyb-Xk7s3Zf7MTuwzB13em-691ssjZwYZO03XBXnwfWaW6EzYGJnWYH352IUlIBrw2K-6qEA1bNgqSakye6Jib_igR-XASjQAy6jChe2rmiCZRPa2jTcVpJwC7wtRdDUarRBnhahZPLHrnvwW1wHVxJcFnTAuzNgMX8ro9Ht7S_zvNcd9ntN_l_QHELeYAcnXgh0jSEGvRdVfqxyGXmW-po5QBctg1wK5RSCgOrOWTEUJSTzNFHdyzZY2_vuUX5eTFf2o09lSDIGsMpBUlbbv_5Ubb9R23TtPLH_tph6Z6uP8XGLRLZ7Xa5CywpwyFwp-BgLzePSwQDT_rkNJluFucgvgYXzPEuLn3lw9DByNYt3HGgQi_MqbLmRUrKOmGlr8w3eZ3zDsjfE4vWnfDlxDCbMFg-fL1WkkEKCAUcrwLuuIDYeJmL_xkuyGHWYAJpW3-nGweN_o_qD)
+@startuml
+skinparam packageStyle rectangle
+skinparam monochrome false
+
+title ROS2 Rover Project Structure
+
+' Define packages for clarity
+package "Power Supply" #FFE4B2 {
+  
+  [12V Battery] as Battery12V
+  [Polulu Trex Jr (driver)] as TrexJr
+  [STM32 B-L475E] as STM32Power
+  [RC Receiver] as ReceiverRC
+  [PowerBank 5V 5A] as PowerBank5V
+  [CM5 IO Board] as CM5_IOBoard
+  [C099 F9P C01 (GPS)] as C099F9PPower
+  
+  Battery12V --> TrexJr : 12V
+  TrexJr --> STM32Power : 5V
+  STM32Power --> ReceiverRC : 5V
+  PowerBank5V --> CM5_IOBoard : 5V 5A
+  CM5_IOBoard --> C099F9PPower : USB 5V
+}
+
+package "Communications and Control" #ADD8E6 {
+  
+  [Turnigy Remote Control] as RemoteControl
+  [STM32 B-L475E] as STM32Comm
+  [Raspberry Pi CM5] as CM5
+  [C099 F9P C01] as C099F9PComm
+  [Polulu Trex Jr (driver)] as TrexJrComm
+  [DC Motors] as Motors
+  
+  RemoteControl --> STM32Comm : PWM control, switch
+  C099F9PComm --> CM5 : NMEA UART
+  STM32Comm --> CM5 : IMU UART (Accel + Gyro)
+  CM5 --> STM32Comm : Movement commands UART
+  STM32Comm --> TrexJrComm : PWM
+  TrexJrComm --> Motors : Motor control
+}
+
+package "ROS2 Packages in CM5" #D3D3D3 {
+  
+  [rover_gpsreceiver] as GPSReceiver
+  [rover_navigation] as Navigation
+  [robot_localization (EKF)] as Localization
+
+  GPSReceiver --> Navigation : Position data
+  Navigation --> Localization : Navigation data
+  Localization --> Navigation : EKF correction
+}
+
+@enduml
+
 
 ```
 Ros2_Rover/
