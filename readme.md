@@ -20,7 +20,7 @@
 
 ## Project Structure and Architecture  📂
 
-```
+```plantuml
 @startuml
 skinparam packageStyle rectangle
 skinparam monochrome false
