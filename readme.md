@@ -21,6 +21,12 @@
 ## Project Structure and Architecture  📂
 
 ```mermaid
+---
+config:
+  theme: default
+  layout: dagre
+  look: neo
+---
 flowchart BT
   subgraph subGraph0["Power Supply"]
     Battery12V["12V Battery"]
@@ -42,6 +48,12 @@ flowchart BT
 ```
 
 ```mermaid
+---
+config:
+  theme: default
+  layout: dagre
+  look: neo
+---
 flowchart BT
   subgraph subGraph1["Communications and Control"]
     RemoteControl["Turnigy Remote Control"]
@@ -61,7 +73,13 @@ flowchart BT
 
   style subGraph1 fill:#BBDEFB,stroke:#000000
 
-```
+```mermaid
+---
+config:
+  theme: default
+  layout: dagre
+  look: neo
+---
 flowchart BT
   subgraph subGraph2["ROS2 Packages in CM5"]
     GPSReceiver["rover_gpsreceiver"]
