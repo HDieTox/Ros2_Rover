@@ -72,6 +72,7 @@ flowchart BT
   TrexJrComm -- Motor control --> Motors
 
   style subGraph1 fill:#BBDEFB,stroke:#000000
+```
 
 ```mermaid
 ---
@@ -92,7 +93,7 @@ flowchart BT
   Localization -- EKF correction --> Navigation
 
   style subGraph2 fill:#C8E6C9,stroke:#000000
-
+```
 
 
 ```
