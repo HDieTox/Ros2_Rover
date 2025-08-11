@@ -1,0 +1,14 @@
+../Core/Src/main.c:854:16:platform_write	1
+../Core/Src/main.c:861:16:platform_read	1
+../Core/Src/main.c:225:6:SystemClock_Config	4
+../Core/Src/main.c:681:6:HAL_TIM_IC_CaptureCallback	16
+../Core/Src/main.c:765:6:Update_Motors	1
+../Core/Src/main.c:793:6:processCompleteMessage	2
+../Core/Src/main.c:777:6:HAL_UART_RxCpltCallback	4
+../Core/Src/main.c:806:6:CheckSwitchMode	6
+../Core/Src/main.c:838:5:__io_putchar	1
+../Core/Src/main.c:843:6:HAL_UART_ErrorCallback	1
+../Core/Src/main.c:868:6:IMU_Init	3
+../Core/Src/main.c:896:6:IMU_Read	3
+../Core/Src/main.c:121:5:main	20
+../Core/Src/main.c:932:6:Error_Handler	1
