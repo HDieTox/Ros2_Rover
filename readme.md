@@ -6,7 +6,7 @@
 
 - ✅ Simultaneous Localization and IMU
 - ✅ Autonomous navigation with waypoints
-- ❌ centimetrics precision
+- ❌ RTK correction 
 - ❌ **Real-world deployment**
 - ❌ video perception (e.g., object recognition)  
 
