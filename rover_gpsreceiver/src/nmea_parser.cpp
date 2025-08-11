@@ -36,6 +36,10 @@ private:
                     return;
                 }
                 auto fix = sensor_msgs::msg::NavSatFix();
+                fix.position_covariance = {1.0, 0.0, 0.0,
+                                           0.0, 1.0, 0.0,
+                                           0.0, 0.0, 2.0};
+                fix.position_covariance_type = 2;
                 fix.header.stamp = now();
                 fix.header.frame_id = "gps";
                 fix.latitude = minmea_tocoord(&frame.latitude);

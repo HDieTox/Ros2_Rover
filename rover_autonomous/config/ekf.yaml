@@ -2,34 +2,41 @@ ekf_filter_node:
   ros__parameters:
     frequency: 30.0
     sensor_timeout: 1.0
-    two_d_mode: true           # We consider horizontal XY + yaw (2D)
+    two_d_mode: false           # Doit être false pour utiliser GPS
     publish_tf: true
     publish_acceleration: false
     map_frame: map
     odom_frame: odom
-    base_link_frame: base_link
     world_frame: odom
 
+    # Configuration GPS
     navsat0: /gps/fix
-    navsat0_config: [false, false, false,
-                   false, false, false,
-                   true,  true,  true,
-                   false, false, false,
-                   false, false, false]
-    odom0_queue_size: 10
+    navsat0_config: [true, true, true,     # Position (lat, lon, alt)
+                     false, false, false,  # Vitesse linéaire
+                     false, false, false,  # Orientation
+                     false, false, false]  # Vitesse angulaire
+    navsat0_delay: 0.0
+    navsat0_gps_use: true
+    datum: [49.230, 17.657, 0.0]  # Point de référence (utilisez votre premier point de mission)
+    navsat0_queue_size: 10
 
+    # Configuration IMU
     imu0: /imu_data
-    imu0_config: [false, false, false,
-                  true,  true,  true,
-                  false, false, false,
-                  true,  true,  true,
-                  false, false, false]
+    imu0_config: [false, false, false,   # Position
+                  true,  true,  true,    # Orientation
+                  false, false, false,   # Vitesse linéaire
+                  true,  true,  true,    # Vitesse angulaire
+                  false, false, false]    # Accélération
     imu0_queue_size: 10
 
-    # Process noise covariance params
+    # Process noise covariance
     process_noise_covariance: [0.05, 0.0, 0.0, 0.0, 0.0, 0.0,
                                0.0, 0.05, 0.0, 0.0, 0.0, 0.0,
-                               0.0, 0.0, 0.05, 0.0, 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.1, 0.0, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.1, 0.0,
-                               0.0, 0.0, 0.0, 0.0, 0.0, 0.1]
+                               0.0, 0.0, 0.06, 0.0, 0.0, 0.0,
+                               0.0, 0.0, 0.0, 0.03, 0.0, 0.0,
+                               0.0, 0.0, 0.0, 0.0, 0.03, 0.0,
+                               0.0, 0.0, 0.0, 0.0, 0.0, 0.06]
+    
+    # Debug
+    debug: true
+    print_diagnostics: true
