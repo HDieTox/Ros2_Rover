@@ -4,6 +4,7 @@
 ## Current State 🧪  
 **Functional Prototype** with core navigation capabilities:  
 
+- ✅ Manual Control and Switch for autonomous navigation
 - ✅ Simultaneous Localization and IMU
 - ✅ Autonomous navigation with waypoints
 - ❌ RTK correction 
