@@ -10,8 +10,8 @@ ekf_filter_node:
     base_link_frame: base_link
     world_frame: odom
 
-    odom0: /gps/fix
-    odom0_config: [false, false, false,
+    navsat0: /gps/fix
+    navsat0_config: [false, false, false,
                    false, false, false,
                    true,  true,  true,
                    false, false, false,
