@@ -20,6 +20,7 @@
 
 ## Project Structure and Architecture  📂
 
+```
 @startuml
 skinparam packageStyle rectangle
 skinparam monochrome false
@@ -73,7 +74,7 @@ package "ROS2 Packages in CM5" #D3D3D3 {
 }
 
 @enduml
-
+```
 
 ```
 Ros2_Rover/
