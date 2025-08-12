@@ -13,12 +13,6 @@
 
 ---
 
-## Board Used ⚙️
-- Raspberry Pi CM5 IO board with **ROS2 JAZZY** (Ubuntu 24.04)
-- STM32 B-L475E
-- UBlox C099 F9P
-- Polulu Trex JR 
-
 ## Project Structure 📂
 
 ```
@@ -78,6 +72,21 @@ in 2 different terminals in rover_ws/ :
 
 - `. install/setup.bash && ros2 launch rover_gpsreceiver gps.launch.py`
 - `. install/setup.bash && ros2 launch rover_autonomous navigation.launch.py mission_file:=./src/SQUARE.plan`
+
+
+## Board Used ⚙️
+- Raspberry Pi CM5 IO board with **ROS2 JAZZY** (Ubuntu 24.04)
+- STM32 B-L475E
+- UBlox C099 F9P
+- Polulu Trex JR 
+
+## Pin Configuration 
+
+
+- Raspberry Pi CM5 IO board
+- STM32 B-L475E
+- UBlox C099 F9P
+- Polulu Trex JR 
 
 ## Graphical Recap
 
@@ -155,3 +164,7 @@ flowchart BT
 
   style subGraph2 fill:#C8E6C9,stroke:#000000
 ```
+
+## Documentation
+
+- 
