@@ -23,7 +23,7 @@ ekf_filter_node:
     # Configuration IMU
     imu0: /imu_data
     imu0_config: [false, false, false,   # Position
-                  true,  true,  true,    # Orientation
+                  false, false, false,    # Orientation
                   false, false, false,   # Vitesse linéaire
                   true,  true,  true,    # Vitesse angulaire
                   false, false, false]    # Accélération
@@ -37,9 +37,11 @@ ekf_filter_node:
                                0.0, 0.0, 0.0, 0.0, 0.01, 0.0,
                                0.0, 0.0, 0.0, 0.0, 0.0, 0.01]
 
-    initial_state: [0.0, 0.0, 0.0,   # Position
-                  0.0, 0.0, 0.0,   # Orientation
-                  0.0, 0.0, 0.0]   # Vitesse
+    initial_state: [0.0, 0.0, 0.0,   # Position (x, y, z)
+                    0.0, 0.0, 0.0,   # Orientation (roll, pitch, yaw)
+                    0.0, 0.0, 0.0,   # Vitesse linéaire (vx, vy, vz)
+                    0.0, 0.0, 0.0,   # Vitesse angulaire (vroll, vpitch, vyaw)
+                    0.0, 0.0, 0.0]   # Accélération (ax, ay, az)
     
     # Debug
     debug: true
