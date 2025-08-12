@@ -36,10 +36,10 @@ private:
                     return;
                 }
                 auto fix = sensor_msgs::msg::NavSatFix();
-                fix.position_covariance = {1.0, 0.0, 0.0,
-                                           0.0, 1.0, 0.0,
-                                           0.0, 0.0, 2.0};
-                fix.position_covariance_type = 2;
+                fix.position_covariance[0] = 1.0; // Variance X
+                fix.position_covariance[4] = 1.0; // Variance Y
+                fix.position_covariance[8] = 2.0; // Variance Z
+                fix.position_covariance_type = sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_DIAGONAL_KNOWN;
                 fix.header.stamp = now();
                 fix.header.frame_id = "gps";
                 fix.latitude = minmea_tocoord(&frame.latitude);
